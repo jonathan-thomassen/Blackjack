@@ -357,8 +357,9 @@ internal class Game
         Console.WriteLine("Current balance: " + _player.Balance + " USD");
         Console.WriteLine();
 
-        Console.WriteLine("Press any key to continue...");
+        Console.WriteLine("Press any key to start a new round...");
         Console.ReadKey(true);
+        Console.Clear();
     }
 
     internal void Reshuffle()
