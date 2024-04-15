@@ -4,7 +4,6 @@ internal class Game
 {
     private bool _playLoopConcluded = false;
     private int _noOfDecks;
-    private bool _gameOver = false;
     private Dealer _dealer;
     private Player _player;
     private List<Card> _deck = new List<Card>();
@@ -21,9 +20,17 @@ internal class Game
     {
         CreateDeck();
 
-        while (!_gameOver)
+        while (true)
         {
             WriteBalance();
+
+            if (_player.Balance < 10)
+            {
+                Console.WriteLine("Your balance is insufficient for another round. Game over.");
+                Console.WriteLine();
+
+                break;
+            }
 
             int bet;
             bool betInputCorrect;
@@ -47,6 +54,13 @@ internal class Game
                 {
                     betInputCorrect = false;
                     Console.WriteLine("Invalid input. Try again.");
+                    Console.WriteLine();
+                }
+
+                if (bet > _player.Balance)
+                {
+                    betInputCorrect = false;
+                    Console.WriteLine("Your balance is insufficient. Try a lower amount.");
                     Console.WriteLine();
                 }
 
@@ -94,7 +108,7 @@ internal class Game
                     ShowPlayerHand(hand, handNo);
                     bool wasHandSplit = false;
 
-                    if (_player.DecisionsMade == 0 && _dealer.Hand.Cards[0].Value == 1)
+                    if (_player.DecisionsMade == 0 && _dealer.Hand.Cards[0].Value == 1 && _player.Balance >= (hand.Bet / 2))
                     {
                         Console.WriteLine("Dealer drew an Ace. Would you like to take insurance? Y/N");
 
@@ -130,68 +144,96 @@ internal class Game
                     }
                     else
                     {
-                        Console.Write("H: Hit, S: Stand, D: Double down");
-                        if (_player.DecisionsMade == 0)
+                        bool actionInputCorrect;
+
+                        do
                         {
-                            if (hand.IsSplitPossible())
+                            actionInputCorrect = true;
+
+                            Console.Write("H: Hit, S: Stand");
+                            if (_player.Balance >= hand.Bet)
                             {
-                                Console.Write(", P: Split");
+                                Console.Write(", D: Double down");
                             }
-                            Console.Write(", U: Surrender");
-                        }
-                        Console.Write("\n");
+                            if (_player.DecisionsMade == 0)
+                            {
+                                if (hand.IsSplitPossible())
+                                {
+                                    Console.Write(", P: Split");
+                                }
+                                Console.Write(", U: Surrender");
+                            }
+                            Console.Write("\n");
 
-                        var input = Console.ReadKey();
-                        DrawHeader();
+                            var input = Console.ReadKey(true);
+                            DrawHeader();
+
+                            switch (input.Key)
+                            {
+                                case ConsoleKey.H:
+                                    {
+                                        Hit(hand);
+                                        break;
+                                    }
+                                case ConsoleKey.S:
+                                    {
+                                        hand.Stand = true;
+                                        Console.WriteLine("You decided to stand.");
+                                        break;
+                                    }
+                                case ConsoleKey.D:
+                                    {
+                                        if (_player.Balance >= hand.Bet)
+                                        {
+                                            DoubleDown(hand);
+                                        }
+                                        else
+                                        {
+                                            actionInputCorrect = false;
+                                        }
+                                        break;
+                                    }
+                                case ConsoleKey.P:
+                                    {
+                                        if (_player.DecisionsMade == 0 && hand.IsSplitPossible())
+                                        {
+                                            wasHandSplit = hand.Split(_player);
+                                        }
+                                        else
+                                        {
+                                            actionInputCorrect = false;
+                                        }
+                                        break;
+                                    }
+                                case ConsoleKey.U:
+                                    {
+                                        if (_player.DecisionsMade == 0)
+                                        {
+                                            _player.Surrender();
+                                        }
+                                        else
+                                        {
+                                            actionInputCorrect = false;
+                                        }
+                                        break;
+                                    }
+                                default:
+                                    {
+                                        actionInputCorrect = false;
+                                        break;
+                                    }
+                            }
+
+                            if (!actionInputCorrect)
+                            {
+                                Console.WriteLine("Invalid input. Try again.");
+                                Console.WriteLine();
+                                WriteBalance();
+                                ShowDealerHand();
+                                ShowPlayerHand(hand, handNo);
+                            }
+                        } while (!actionInputCorrect);
                         _player.DecisionsMade++;
-
-                        switch (input.Key)
-                        {
-                            case ConsoleKey.H:
-                                {
-                                    Hit(hand);
-                                    break;
-                                }
-                            case ConsoleKey.S:
-                                {
-                                    hand.Stand = true;
-                                    Console.WriteLine("You decided to stand.");
-                                    break;
-                                }
-                            case ConsoleKey.D:
-                                {
-                                    DoubleDown(hand);
-                                    break;
-                                }
-                            case ConsoleKey.P:
-                                {
-                                    if (_player.DecisionsMade == 0 && hand.IsSplitPossible())
-                                    {
-                                        wasHandSplit = hand.Split(_player);
-                                    }
-                                    else
-                                    {
-                                        throw new SystemException("Unsupported input.");
-                                    }
-                                    break;
-                                }
-                            case ConsoleKey.U:
-                                {
-                                    if (_player.DecisionsMade == 0)
-                                    {
-                                        _player.Surrender();
-                                    }
-                                    else
-                                    {
-                                        throw new SystemException("Unsupported input.");
-                                    }
-                                    break;
-                                }
-                            default:
-                                {
-                                    throw new SystemException("Unsupported input.");
-                                }
-                        }
                     }
                     if (wasHandSplit)
                     {
