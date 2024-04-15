@@ -7,17 +7,16 @@ internal abstract class Actor
 
     internal Actor()
     {
-        Hands.Add(new Hand());
     }
 
-    internal virtual Hand WipeAllHands(List<Card> discardPile)
+    internal virtual Hand WipeAllHands(List<Card> discardPile, int newBet)
     {
         foreach (Hand hand in _hands)
         {
             hand.Wipe(discardPile);
         }
         _hands.Clear();
-        Hand returnHand = new Hand();
+        Hand returnHand = new Hand(newBet);
         _hands.Add(returnHand);
         return returnHand;
     }

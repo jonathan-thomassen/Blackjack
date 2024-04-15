@@ -2,13 +2,18 @@ internal class Hand
 {
     private List<Card> _cards = new List<Card>();
     private bool _stand = false;
+    private int _bet;
 
-    public bool Stand { get => _stand; set => _stand = value; }
+    internal bool Stand { get => _stand; set => _stand = value; }
+    internal int Bet { get => _bet; set => _bet = value; }
 
-    internal Hand() { }
-    internal Hand(Card card)
+    internal Hand(int bet) {
+        Bet = bet;
+    }
+    internal Hand(Card card, int bet)
     {
         _cards.Add(card);
+        Bet = bet;
     }
 
     internal void AddCard(Card card)
@@ -96,13 +101,13 @@ internal class Hand
         return false;
     }
 
-    internal bool Split(Player player, int ante)
+    internal bool Split(Player player)
     {
         if (IsSplitPossible())
         {
-            player.AddNewHand(_cards[1]);
+            player.AddNewHand(_cards[1], _bet);
             _cards.Remove(_cards[1]);
-            player.Balance -= ante;
+            player.Balance -= _bet;
             return true;
         }
         return false;

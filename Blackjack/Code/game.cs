@@ -1,8 +1,6 @@
 internal class Game
 {
     private bool _playLoopConcluded = false;
-    private int _ante = 10;
-    private int _pot;
     private int _noOfDecks;
     private Dealer _dealer;
     private Player _player;
@@ -10,8 +8,6 @@ internal class Game
     private List<Card> _discardPile = new List<Card>();
     private bool _gameOver = false;
     private int _decisionNo = 0;
-    private bool _surrendered = false;
-    private bool _insuranceTaken = false;
     private Card? _dealersFirstCard;
 
     internal List<Card> Cards { get => _deck; set => _deck = value; }
@@ -32,27 +28,34 @@ internal class Game
             Console.WriteLine("Current balance: " + _player.Balance + " USD");
             Console.WriteLine();
 
-            Console.WriteLine("Ante is " + _ante + " USD");
-            Console.WriteLine("Press any key to start a new round...");
-            Console.ReadKey(true);
-            Console.WriteLine();
+            int bet;
+            bool betInputCorrect;
+            do
+            {
+                betInputCorrect = true;
+                Console.WriteLine("You may bet from 10 to 100 dollars, in increments of 10 dollars.");
+                Console.WriteLine("How much would you like to bet?");
+                if (!int.TryParse(Console.ReadLine(), out bet) || !(bet > 0 && bet <= 100 && bet % 10 == 0))
+                {
+                    betInputCorrect = false;
+                    Console.WriteLine("Invalid input. Try again.");
+                    Console.WriteLine();
+                }
 
-            Hand dealerHand = _dealer.WipeAllHands(_discardPile);
-            Hand playerHand = _player.WipeAllHands(_discardPile);
+            } while (!betInputCorrect);
+
+            Hand dealerHand = _dealer.WipeAllHands(_discardPile, 0);
+            Hand playerHand = _player.WipeAllHands(_discardPile, bet);
 
             _dealersFirstCard = DrawACard();
             dealerHand.AddCard(_dealersFirstCard);
             playerHand.AddCard(DrawACard());
             playerHand.AddCard(DrawACard());
 
+            _player.Reset();
             _decisionNo = 0;
-
-            _player.Balance -= _ante;
-            _pot = _ante * 2;
-
+            _player.Balance -= playerHand.Bet;
             _playLoopConcluded = false;
-            _surrendered = false;
-            _insuranceTaken = false;
 
             while (!_playLoopConcluded)
             {
@@ -61,7 +64,6 @@ internal class Game
             }
 
             DealerLoop();
-
             EndRound();
         }
     }
@@ -95,8 +97,7 @@ internal class Game
 
                         if (input.Key == ConsoleKey.Y)
                         {
-                            _player.Balance -= _ante / 2;
-                            _insuranceTaken = true;
+                            _player.TakeInsurance(hand.Bet / 2);
                         }
                     }
 
@@ -115,11 +116,12 @@ internal class Game
                     }
                     else
                     {
+                        Console.Write("H: Hit, S: Stand, D: Double down");
                         if (_decisionNo == 0)
                         {
                             if (hand.IsSplitPossible())
                             {
-                                Console.WriteLine("H: Hit, S: Stand, D: Double down, P: Split, U: Surrender");
+                                Console.Write(", P: Split, U: Surrender\n");
 
                                 var input = Console.ReadKey();
                                 Console.WriteLine();
@@ -145,13 +147,12 @@ internal class Game
                                         }
                                     case ConsoleKey.P:
                                         {
-                                            wasHandSplit = hand.Split(_player, _ante);
+                                            wasHandSplit = hand.Split(_player);
                                             break;
                                         }
                                     case ConsoleKey.U:
                                         {
-                                            _surrendered = true;
-                                            hand.Stand = true;
+                                            _player.Surrender();
                                             break;
                                         }
                                     default:
@@ -162,7 +163,7 @@ internal class Game
                             }
                             else
                             {
-                                Console.WriteLine("H: Hit, S: Stand, D: Double down, U: Surrender");
+                                Console.Write(", U: Surrender\n");
 
                                 var input = Console.ReadKey();
                                 Console.WriteLine();
@@ -188,8 +189,7 @@ internal class Game
                                         }
                                     case ConsoleKey.U:
                                         {
-                                            _surrendered = true;
-                                            hand.Stand = true;
+                                            _player.Surrender();
                                             break;
                                         }
                                     default:
@@ -201,7 +201,7 @@ internal class Game
                         }
                         else
                         {
-                            Console.WriteLine("H: Hit, S: Stand, D: Double down");
+                            Console.Write("\n");
 
                             var input = Console.ReadKey();
                             Console.WriteLine();
@@ -254,10 +254,7 @@ internal class Game
                 _dealer.Hand.AddCard(card);
             }
 
-            if (_dealer.Hand.CurrentTotal() > 16)
-            {
-                running = false;
-            }
+            if (_dealer.Hand.CurrentTotal() > 16) running = false;
 
             Console.WriteLine("Dealer's hand: " + _dealer.ShowHand());
             Console.WriteLine("Dealer's total: " + _dealer.Hand.CurrentTotal());
@@ -280,30 +277,21 @@ internal class Game
 
     internal void EndRound()
     {
-        if (_insuranceTaken)
+        if (_player.Insurance > 0)
         {
             if (_dealer.HasBlackjack())
             {
-                if (!_player.HasBlackjack())
-                {
-                    Console.WriteLine("Dealer has blackjack. Insurance pays out!");
-                    _player.Balance += _ante / 2;
-                }
-                else
-                {
-                    Console.WriteLine("Both dealer and player have blackjack. Even money!");
-                    _player.Balance += _ante;
-                }
+                Console.WriteLine("Dealer has blackjack. Insurance pays out!");
+                _player.PayInsurance();
             }
             else
             {
                 Console.WriteLine("Dealer does not have blackjack. Insurance does not pay.");
             }
         }
-        if (_surrendered)
+        if (_player.Surrendered)
         {
             Console.WriteLine("You have surrendered.");
-            _player.Balance += _ante / 2;
         }
         else
         {
@@ -316,24 +304,22 @@ internal class Game
                         if (!_dealer.HasBlackjack())
                         {
                             Console.WriteLine("Blackjack! You win!");
-                            _pot += _ante / 2;
-                            _player.Balance += _pot;
+                            _player.Balance += hand.Bet + ((hand.Bet * 3) / 2);
                         }
                         else
                         {
                             Console.WriteLine("Both you and the dealer have blackjack. Push.");
-                            _pot += _ante / 2;
-                            _player.Balance += _pot;
+                            _player.Balance += hand.Bet;
                         }
                     }
-                    if (_dealer.Hand.CurrentTotal() < 22)
+                    else if (_dealer.Hand.CurrentTotal() < 22)
                     {
                         switch (hand.CurrentTotal() - _dealer.Hand.CurrentTotal())
                         {
                             case > 0:
                                 {
                                     Console.WriteLine("You win!");
-                                    _player.Balance += _pot;
+                                    _player.Balance += hand.Bet * 2;
                                     break;
                                 }
                             case 0:
@@ -345,7 +331,7 @@ internal class Game
                                     else
                                     {
                                         Console.WriteLine("Push.");
-                                        _player.Balance += _pot / 2;
+                                        _player.Balance += hand.Bet;
                                     }
                                     break;
                                 }
@@ -359,7 +345,7 @@ internal class Game
                     else
                     {
                         Console.WriteLine("Dealer is bust! You win!");
-                        _player.Balance += _pot;
+                        _player.Balance += hand.Bet * 2;
                     }
                 }
                 else
@@ -389,10 +375,7 @@ internal class Game
         Card card = _deck[cardNo];
         _deck.Remove(card);
 
-        if (_deck.Count == 0)
-        {
-            Reshuffle();
-        }
+        if (_deck.Count == 0) Reshuffle();
 
         return card;
     }
@@ -407,8 +390,8 @@ internal class Game
 
     internal void DoubleDown(Hand hand)
     {
-        _player.Balance -= _ante;
-        _pot += _ante * 2;
+        _player.Balance -= hand.Bet;
+        hand.Bet *= 2;
 
         Hit(hand);
 
