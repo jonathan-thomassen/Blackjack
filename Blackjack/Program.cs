@@ -7,8 +7,6 @@
 
         Console.OutputEncoding = System.Text.Encoding.UTF8;
 
-        Console.Clear();
-
         game.DrawHeader();
 
         Console.WriteLine("Welcome to Blackjack! Good luck!");

@@ -51,7 +51,7 @@ internal class Game
 
             } while (!betInputCorrect);
 
-            Console.Clear();
+            DrawHeader();
 
             Console.WriteLine($"You bet {bet} USD.");
 
@@ -114,7 +114,7 @@ internal class Game
                         hand.Stand = true;
                         Console.WriteLine("You are bust. Press any key to continue...");
                         Console.ReadKey(true);
-                        Console.Clear();
+                        DrawHeader();
                     }
                     else if (hand.CurrentTotal() == 21)
                     {
@@ -128,7 +128,7 @@ internal class Game
                             Console.WriteLine("You got a Blackjack! Press any key to continue...");                            
                         }
                         Console.ReadKey(true);
-                        Console.Clear();
+                        DrawHeader();
                     }
                     else
                     {
@@ -140,7 +140,7 @@ internal class Game
                                 Console.Write(", P: Split, U: Surrender\n");
 
                                 var input = Console.ReadKey();
-                                Console.Clear();
+                                DrawHeader();
 
                                 _player.DecisionsMade++;
 
@@ -183,7 +183,7 @@ internal class Game
                                 Console.Write(", U: Surrender\n");
 
                                 var input = Console.ReadKey();
-                                Console.Clear();
+                                DrawHeader();
 
                                 _player.DecisionsMade++;
 
@@ -222,7 +222,7 @@ internal class Game
                             Console.Write("\n");
 
                             var input = Console.ReadKey();
-                            Console.Clear();
+                            DrawHeader();
 
                             switch (input.Key)
                             {
@@ -285,7 +285,7 @@ internal class Game
             {
                 Console.WriteLine("Dealer will hit. Press any key to continue...");
                 Console.ReadKey(true);
-                Console.Clear();
+                DrawHeader();
             }
         }
     }
@@ -374,7 +374,7 @@ internal class Game
         Console.WriteLine();
         Console.WriteLine("Press any key to start a new round...");
         Console.ReadKey(true);
-        Console.Clear();
+        DrawHeader();
     }
 
     internal void Reshuffle()
@@ -451,6 +451,8 @@ internal class Game
 
     internal void DrawHeader()
     {
+        Console.Clear();
+
         for (int i = 0; i < 80; i++)
         {
             Console.Write("-");
