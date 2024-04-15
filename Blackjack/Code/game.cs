@@ -1,3 +1,6 @@
+using System.Formats.Asn1;
+using System.Reflection.Metadata;
+
 internal class Game
 {
     private bool _playLoopConcluded = false;
@@ -69,16 +72,15 @@ internal class Game
             Console.WriteLine("Current balance: " + _player.Balance + " USD");
             Console.WriteLine();
 
-            Console.WriteLine("Dealer's hand: " + _dealer.ShowHand());
-            Console.WriteLine("Dealer's total: " + _dealer.Hand.CurrentTotal());
+            ShowDealerHand();
 
+            int handNo = 0;
             foreach (Hand hand in _player.Hands)
             {
+                handNo++;
                 if (!hand.Stand)
                 {
-                    Console.WriteLine("Your hand: " + hand.Show());
-                    Console.WriteLine("Your total: " + hand.CurrentTotal());
-                    Console.WriteLine();
+                    ShowPlayerHand(hand, handNo);
 
                     bool wasHandSplit = false;
 
@@ -97,6 +99,8 @@ internal class Game
 
                     if (hand.CurrentTotal() > 21)
                     {
+                        Console.WriteLine("You are bust. Press any key to continue...");
+                        Console.ReadKey(true);
                         hand.Stand = true;
                     }
                     else if (hand.CurrentTotal() == 21)
@@ -105,6 +109,10 @@ internal class Game
                         if (!_player.HasBlackjack())
                         {
                             Console.WriteLine("21. Press any key to continue...");
+                            Console.ReadKey(true);
+                        } else
+                        {
+                            Console.WriteLine("Blackjack! Press any key to continue...");
                             Console.ReadKey(true);
                         }
                     }
@@ -250,14 +258,11 @@ internal class Game
 
             if (_dealer.Hand.CurrentTotal() > 16) running = false;
 
-            Console.WriteLine("Dealer's hand: " + _dealer.ShowHand());
-            Console.WriteLine("Dealer's total: " + _dealer.Hand.CurrentTotal());
+            ShowDealerHand();
 
             foreach (Hand hand in _player.Hands)
             {
-                Console.WriteLine("Your hand: " + hand.Show());
-                Console.WriteLine("Your total: " + hand.CurrentTotal());
-                Console.WriteLine();
+                ShowPlayerHand(hand);
             }
 
             if (running)
@@ -297,7 +302,7 @@ internal class Game
                     {
                         if (!_dealer.HasBlackjack())
                         {
-                            Console.WriteLine("Blackjack! You win " + hand.Bet + ((hand.Bet * 3) / 2) + "USD !");
+                            Console.WriteLine("Blackjack! You win " + (hand.Bet + ((hand.Bet * 3) / 2)) + " USD!");
                             _player.Balance += hand.Bet + ((hand.Bet * 3) / 2);
                         }
                         else
@@ -403,6 +408,28 @@ internal class Game
                     _deck.Add(new Card(i, (Suits)j, k));
                 }
             }
+        }
+    }
+
+    internal void ShowDealerHand()
+    {
+        Console.WriteLine("Dealer's hand: " + _dealer.ShowHand());
+        Console.WriteLine("Dealer's total: " + _dealer.Hand.CurrentTotal());
+    }
+
+    internal void ShowPlayerHand(Hand hand, int handNo = 0)
+    {
+        if (_player.Hands.Count > 1)
+        {
+            Console.WriteLine($"Your hand #{handNo}: {hand.Show()}");
+            Console.WriteLine($"Your hand #{handNo} total: {hand.CurrentTotal()}");
+            Console.WriteLine();
+        }
+        else
+        {
+            Console.WriteLine($"Your hand: {hand.Show()}");
+            Console.WriteLine($"Your total: {hand.CurrentTotal()}");
+            Console.WriteLine();
         }
     }
 }
