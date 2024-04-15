@@ -4,11 +4,13 @@ internal class Player : Actor {
     private int _balance;
     private int _insurance = 0;
     private bool _surrendered = false;
+    private int _decisionsMade = 0;
 
     public string Name { get => _name; set => _name = value; }
     public int Balance { get => _balance; set => _balance = value; }
     public int Insurance { get => _insurance; set => _insurance = value; }
     public bool Surrendered { get => _surrendered; }
+    public int DecisionsMade { get => _decisionsMade; set => _decisionsMade = value; }
 
     internal Player(string name, int balance)
     {
@@ -74,5 +76,18 @@ internal class Player : Actor {
     internal void Reset()
     {
         _surrendered = false;
+        _decisionsMade = 0;
+    }
+
+    internal Hand DealNewHand(List<Card> discardPile, int bet)
+    {
+        foreach (Hand hand in Hands)
+        {
+            hand.Wipe(discardPile);
+        }
+        Hands.Clear();
+        Hand returnHand = new Hand(bet);
+        Hands.Add(returnHand);
+        return returnHand;
     }
 }

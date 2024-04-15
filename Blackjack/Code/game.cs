@@ -2,15 +2,11 @@ internal class Game
 {
     private bool _playLoopConcluded = false;
     private int _noOfDecks;
+    private bool _gameOver = false;
     private Dealer _dealer;
     private Player _player;
     private List<Card> _deck = new List<Card>();
     private List<Card> _discardPile = new List<Card>();
-    private bool _gameOver = false;
-    private int _decisionNo = 0;
-    private Card? _dealersFirstCard;
-
-    internal List<Card> Cards { get => _deck; set => _deck = value; }
 
     internal Game(Player player, int decks)
     {
@@ -44,16 +40,14 @@ internal class Game
 
             } while (!betInputCorrect);
 
-            Hand dealerHand = _dealer.WipeAllHands(_discardPile, 0);
-            Hand playerHand = _player.WipeAllHands(_discardPile, bet);
+            Hand dealerHand = _dealer.DealNewHand(_discardPile);
+            Hand playerHand = _player.DealNewHand(_discardPile, bet);
 
-            _dealersFirstCard = DrawACard();
-            dealerHand.AddCard(_dealersFirstCard);
+            dealerHand.AddCard(DrawACard());
             playerHand.AddCard(DrawACard());
             playerHand.AddCard(DrawACard());
 
             _player.Reset();
-            _decisionNo = 0;
             _player.Balance -= playerHand.Bet;
             _playLoopConcluded = false;
 
@@ -88,7 +82,7 @@ internal class Game
 
                     bool wasHandSplit = false;
 
-                    if (_decisionNo == 0 && _dealersFirstCard?.Value == 1)
+                    if (_player.DecisionsMade == 0 && _dealer.Hand.Cards[0].Value == 1)
                     {
                         Console.WriteLine("Dealer drew an Ace. Would you like to take insurance? Y/N");
 
@@ -117,7 +111,7 @@ internal class Game
                     else
                     {
                         Console.Write("H: Hit, S: Stand, D: Double down");
-                        if (_decisionNo == 0)
+                        if (_player.DecisionsMade == 0)
                         {
                             if (hand.IsSplitPossible())
                             {
@@ -126,7 +120,7 @@ internal class Game
                                 var input = Console.ReadKey();
                                 Console.WriteLine();
 
-                                _decisionNo++;
+                                _player.DecisionsMade++;
 
                                 switch (input.Key)
                                 {
@@ -168,7 +162,7 @@ internal class Game
                                 var input = Console.ReadKey();
                                 Console.WriteLine();
 
-                                _decisionNo++;
+                                _player.DecisionsMade++;
 
                                 switch (input.Key)
                                 {
@@ -281,7 +275,7 @@ internal class Game
         {
             if (_dealer.HasBlackjack())
             {
-                Console.WriteLine("Dealer has blackjack. Insurance pays out!");
+                Console.WriteLine("Dealer has blackjack. Insurance pays out and you get " + _player.Insurance + " USD.");
                 _player.PayInsurance();
             }
             else
@@ -291,7 +285,7 @@ internal class Game
         }
         if (_player.Surrendered)
         {
-            Console.WriteLine("You have surrendered.");
+            Console.WriteLine("You have surrendered. You get " + _player.Hands[0].Bet / 2 + " USD back.");
         }
         else
         {
@@ -303,12 +297,12 @@ internal class Game
                     {
                         if (!_dealer.HasBlackjack())
                         {
-                            Console.WriteLine("Blackjack! You win!");
+                            Console.WriteLine("Blackjack! You win " + hand.Bet + ((hand.Bet * 3) / 2) + "USD !");
                             _player.Balance += hand.Bet + ((hand.Bet * 3) / 2);
                         }
                         else
                         {
-                            Console.WriteLine("Both you and the dealer have blackjack. Push.");
+                            Console.WriteLine("Both you and the dealer have blackjack. Push. You get your bet of " + hand.Bet + " USD back.");
                             _player.Balance += hand.Bet;
                         }
                     }
@@ -318,7 +312,7 @@ internal class Game
                         {
                             case > 0:
                                 {
-                                    Console.WriteLine("You win!");
+                                    Console.WriteLine("Your hand wins and nets you " + hand.Bet * 2 + " USD!");
                                     _player.Balance += hand.Bet * 2;
                                     break;
                                 }
@@ -330,7 +324,7 @@ internal class Game
                                     }
                                     else
                                     {
-                                        Console.WriteLine("Push.");
+                                        Console.WriteLine("Push. You get your bet of " + hand.Bet + " USD back.");
                                         _player.Balance += hand.Bet;
                                     }
                                     break;
@@ -344,7 +338,7 @@ internal class Game
                     }
                     else
                     {
-                        Console.WriteLine("Dealer is bust! You win!");
+                        Console.WriteLine("Dealer is bust! You win " + hand.Bet * 2 + " USD!");
                         _player.Balance += hand.Bet * 2;
                     }
                 }

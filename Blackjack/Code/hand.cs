@@ -6,14 +6,21 @@ internal class Hand
 
     internal bool Stand { get => _stand; set => _stand = value; }
     internal int Bet { get => _bet; set => _bet = value; }
+    internal List<Card> Cards { get => _cards; }
+
+    internal Hand()
+    {
+        _bet = 0;
+    }
 
     internal Hand(int bet) {
-        Bet = bet;
+        _bet = bet;
     }
+
     internal Hand(Card card, int bet)
     {
         _cards.Add(card);
-        Bet = bet;
+        _bet = bet;
     }
 
     internal void AddCard(Card card)
@@ -25,7 +32,7 @@ internal class Hand
     {
         string returnString = "";
 
-        foreach (Card card in _cards)
+        foreach (Card card in Cards)
         {
             returnString += card.Show() + " ";
         }
@@ -38,7 +45,7 @@ internal class Hand
         int total = 0;
         int noOfAces = 0;
 
-        foreach (Card card in _cards)
+        foreach (Card card in Cards)
         {
             if (card.Value > 9)
             {
@@ -71,13 +78,13 @@ internal class Hand
 
     internal virtual void Wipe(List<Card> discardPile)
     {
-        discardPile.AddRange(_cards);
-        _cards.Clear();
+        discardPile.AddRange(Cards);
+        Cards.Clear();
     }
 
     internal bool IsBlackjack()
     {
-        if (_cards.Count == 2)
+        if (Cards.Count == 2)
         {
             if (CurrentTotal() == 21)
             {
@@ -90,9 +97,9 @@ internal class Hand
 
     internal bool IsSplitPossible()
     {
-        if (_cards.Count == 2)
+        if (Cards.Count == 2)
         {
-            if (_cards[0].Value == _cards[1].Value)
+            if (Cards[0].Value == Cards[1].Value)
             {
                 return true;
             }
@@ -105,8 +112,8 @@ internal class Hand
     {
         if (IsSplitPossible())
         {
-            player.AddNewHand(_cards[1], _bet);
-            _cards.Remove(_cards[1]);
+            player.AddNewHand(Cards[1], _bet);
+            Cards.Remove(Cards[1]);
             player.Balance -= _bet;
             return true;
         }
