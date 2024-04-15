@@ -1,5 +1,3 @@
-using System.Threading.Channels;
-
 internal class Game
 {
     private bool _playLoopConcluded = false;
@@ -23,6 +21,7 @@ internal class Game
         while (true)
         {
             WriteBalance();
+            Console.WriteLine();
 
             if (_player.Balance < 10)
             {
@@ -69,6 +68,7 @@ internal class Game
             DrawHeader();
 
             Console.WriteLine($"You bet {bet} USD.");
+            Console.WriteLine();
 
             Hand dealerHand = _dealer.DealNewHand(_discardPile);
             Hand playerHand = _player.DealNewHand(_discardPile, bet);
@@ -358,7 +358,6 @@ internal class Game
             }
         }
 
-        WriteBalance();
         Console.WriteLine("Press any key to start a new round...");
         Console.ReadKey(true);
         DrawHeader();
@@ -459,6 +458,7 @@ internal class Game
             Console.Write("-");
         }
         Console.Write("\n");
+        Console.WriteLine();
     }
 
     internal void WriteBalance()

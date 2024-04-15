@@ -1,4 +1,3 @@
-
 internal abstract class Actor
 {
     private List<Hand> _hands = new List<Hand>();

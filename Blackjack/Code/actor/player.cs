@@ -1,4 +1,3 @@
-
 internal class Player : Actor {
     private string _name;    
     private int _balance;
