@@ -1,3 +1,5 @@
+using System.Threading.Channels;
+
 internal class Game
 {
     private bool _playLoopConcluded = false;
@@ -21,8 +23,7 @@ internal class Game
 
         while (!_gameOver)
         {
-            Console.WriteLine("Current balance: " + _player.Balance + " USD");
-            Console.WriteLine();
+            WriteBalance();            
 
             int bet;
             bool betInputCorrect;
@@ -76,14 +77,12 @@ internal class Game
             EndRound();
         }
     }
-
+    
     internal void PlayLoop()
     {
         while (!_player.Stand())
         {
-            Console.WriteLine("Current balance: " + _player.Balance + " USD");
-            Console.WriteLine();
-
+            WriteBalance();
             ShowDealerHand();
 
             int handNo = 0;
@@ -370,8 +369,7 @@ internal class Game
             }
         }
 
-        Console.WriteLine("Current balance: " + _player.Balance + " USD");
-        Console.WriteLine();
+        WriteBalance();
         Console.WriteLine("Press any key to start a new round...");
         Console.ReadKey(true);
         DrawHeader();
@@ -472,4 +470,30 @@ internal class Game
         }
         Console.Write("\n");
     }
+
+    internal void WriteBalance()
+    {
+        //Console.Write("| ");
+        Console.Write("Balance: ");
+        string balance = _player.Balance.ToString();
+        for (int i = 0; i < 5 - balance.Length; i++)
+        {
+            Console.Write(" ");
+        }
+        Console.Write(balance + " $");
+        //for (int i = 0; i < 61; i++)
+        //{
+        //    Console.Write(" ");
+        //}
+        //Console.Write("|");
+        Console.Write("\n");
+    }
+
+    internal void DrawPlayfield()
+    {
+        DrawHeader();
+        WriteBalance();
+
+    }
+
 }
