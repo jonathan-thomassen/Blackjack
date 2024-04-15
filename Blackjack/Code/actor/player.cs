@@ -5,12 +5,14 @@ internal class Player : Actor {
     private int _insurance = 0;
     private bool _surrendered = false;
     private int _decisionsMade = 0;
+    private int? _previousBet = null;
 
     public string Name { get => _name; set => _name = value; }
     public int Balance { get => _balance; set => _balance = value; }
     public int Insurance { get => _insurance; set => _insurance = value; }
     public bool Surrendered { get => _surrendered; }
     public int DecisionsMade { get => _decisionsMade; set => _decisionsMade = value; }
+    public int? PreviousBet { get => _previousBet; }
 
     internal Player(string name, int balance)
     {
@@ -77,6 +79,7 @@ internal class Player : Actor {
     {
         _surrendered = false;
         _decisionsMade = 0;
+        _previousBet = Hands[0].Bet;
     }
 
     internal Hand DealNewHand(List<Card> discardPile, int bet)

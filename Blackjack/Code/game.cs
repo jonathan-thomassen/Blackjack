@@ -1,6 +1,3 @@
-using System.Formats.Asn1;
-using System.Reflection.Metadata;
-
 internal class Game
 {
     private bool _playLoopConcluded = false;
@@ -32,8 +29,14 @@ internal class Game
             do
             {
                 betInputCorrect = true;
-                Console.WriteLine("You may bet from 10 to 100 dollars, in increments of 10 dollars.");
-                Console.WriteLine("How much would you like to bet?");
+                Console.WriteLine("You may bet from 10 to 100 USD, in increments of 10 USD.");
+                Console.Write("How much would you like to bet?");
+                if (_player.PreviousBet != null)
+                {
+                    Console.Write($" (leave blank to bet {_player.PreviousBet} USD)");
+                }
+                Console.Write("\n");
+
                 if (!int.TryParse(Console.ReadLine(), out bet) || !(bet > 0 && bet <= 100 && bet % 10 == 0))
                 {
                     betInputCorrect = false;
@@ -108,7 +111,7 @@ internal class Game
                         hand.Stand = true;
                         if (!_player.HasBlackjack())
                         {
-                            Console.WriteLine("21. Press any key to continue...");
+                            Console.WriteLine("21! You stand. Press any key to continue...");
                             Console.ReadKey(true);
                         } else
                         {
@@ -267,7 +270,7 @@ internal class Game
 
             if (running)
             {
-                Console.WriteLine("Press any key to continue...");
+                Console.WriteLine("Dealer will hit. Press any key to continue...");
                 Console.ReadKey(true);
                 Console.WriteLine();
             }
