@@ -6,7 +6,12 @@
         Game game = new Game(player, 1);
 
         Console.OutputEncoding = System.Text.Encoding.UTF8;
-        Console.WriteLine("Welcome to Blackjack!");
+
+        Console.Clear();
+
+        game.DrawHeader();
+
+        Console.WriteLine("Welcome to Blackjack! Good luck!");
         Console.WriteLine();
 
         game.StartGameLoop();

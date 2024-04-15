@@ -60,7 +60,7 @@ internal class Player : Actor {
     internal void TakeInsurance(int amount)
     {
         _balance -= amount;
-        _insurance = amount;
+        _insurance = 2 * amount;
     }
 
     internal void PayInsurance()

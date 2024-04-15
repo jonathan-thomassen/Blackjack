@@ -37,7 +37,12 @@ internal class Game
                 }
                 Console.Write("\n");
 
-                if (!int.TryParse(Console.ReadLine(), out bet) || !(bet > 0 && bet <= 100 && bet % 10 == 0))
+                string? betString = Console.ReadLine();
+                if (betString == "" && _player.PreviousBet != null)
+                {
+                    bet = (int)_player.PreviousBet;
+                }
+                else if (!int.TryParse(betString, out bet) || !(bet > 0 && bet <= 100 && bet % 10 == 0))
                 {
                     betInputCorrect = false;
                     Console.WriteLine("Invalid input. Try again.");
@@ -45,6 +50,10 @@ internal class Game
                 }
 
             } while (!betInputCorrect);
+
+            Console.Clear();
+
+            Console.WriteLine($"You bet {bet} USD.");
 
             Hand dealerHand = _dealer.DealNewHand(_discardPile);
             Hand playerHand = _player.DealNewHand(_discardPile, bet);
@@ -91,7 +100,7 @@ internal class Game
                     {
                         Console.WriteLine("Dealer drew an Ace. Would you like to take insurance? Y/N");
 
-                        var input = Console.ReadKey();
+                        var input = Console.ReadKey(true);
                         Console.WriteLine();
 
                         if (input.Key == ConsoleKey.Y)
@@ -102,9 +111,10 @@ internal class Game
 
                     if (hand.CurrentTotal() > 21)
                     {
+                        hand.Stand = true;
                         Console.WriteLine("You are bust. Press any key to continue...");
                         Console.ReadKey(true);
-                        hand.Stand = true;
+                        Console.Clear();
                     }
                     else if (hand.CurrentTotal() == 21)
                     {
@@ -112,12 +122,13 @@ internal class Game
                         if (!_player.HasBlackjack())
                         {
                             Console.WriteLine("21! You stand. Press any key to continue...");
-                            Console.ReadKey(true);
-                        } else
-                        {
-                            Console.WriteLine("Blackjack! Press any key to continue...");
-                            Console.ReadKey(true);
                         }
+                        else
+                        {
+                            Console.WriteLine("You got a Blackjack! Press any key to continue...");                            
+                        }
+                        Console.ReadKey(true);
+                        Console.Clear();
                     }
                     else
                     {
@@ -129,7 +140,7 @@ internal class Game
                                 Console.Write(", P: Split, U: Surrender\n");
 
                                 var input = Console.ReadKey();
-                                Console.WriteLine();
+                                Console.Clear();
 
                                 _player.DecisionsMade++;
 
@@ -143,6 +154,7 @@ internal class Game
                                     case ConsoleKey.S:
                                         {
                                             hand.Stand = true;
+                                            Console.WriteLine("You decided to stand.");
                                             break;
                                         }
                                     case ConsoleKey.D:
@@ -171,7 +183,7 @@ internal class Game
                                 Console.Write(", U: Surrender\n");
 
                                 var input = Console.ReadKey();
-                                Console.WriteLine();
+                                Console.Clear();
 
                                 _player.DecisionsMade++;
 
@@ -185,6 +197,7 @@ internal class Game
                                     case ConsoleKey.S:
                                         {
                                             hand.Stand = true;
+                                            Console.WriteLine("You decided to stand.");
                                             break;
                                         }
                                     case ConsoleKey.D:
@@ -209,7 +222,7 @@ internal class Game
                             Console.Write("\n");
 
                             var input = Console.ReadKey();
-                            Console.WriteLine();
+                            Console.Clear();
 
                             switch (input.Key)
                             {
@@ -272,7 +285,7 @@ internal class Game
             {
                 Console.WriteLine("Dealer will hit. Press any key to continue...");
                 Console.ReadKey(true);
-                Console.WriteLine();
+                Console.Clear();
             }
         }
     }
@@ -359,7 +372,6 @@ internal class Game
 
         Console.WriteLine("Current balance: " + _player.Balance + " USD");
         Console.WriteLine();
-
         Console.WriteLine("Press any key to start a new round...");
         Console.ReadKey(true);
         Console.Clear();
@@ -435,5 +447,27 @@ internal class Game
             Console.WriteLine($"Your total: {hand.CurrentTotal()}");
             Console.WriteLine();
         }
+    }
+
+    internal void DrawHeader()
+    {
+        for (int i = 0; i < 80; i++)
+        {
+            Console.Write("-");
+        }
+        Console.Write("\n");
+
+        Console.Write("| ");
+        Console.Write("C# Blackjack v0.001");
+        for (int i = 0; i < 58; i++) {
+            Console.Write(" ");
+        }
+        Console.Write("|\n");
+
+        for (int i = 0; i < 80; i++)
+        {
+            Console.Write("-");
+        }
+        Console.Write("\n");
     }
 }
