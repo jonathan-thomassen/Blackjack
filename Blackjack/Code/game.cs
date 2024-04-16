@@ -95,15 +95,14 @@ internal class Game
     {
         while (!_player.Stand())
         {
-            WriteBalance();
-            ShowDealerHand();
-
             int handNo = 0;
             foreach (Hand hand in _player.Hands)
             {
                 handNo++;
                 if (!hand.Stand)
                 {
+                    WriteBalance();
+                    ShowDealerHand();
                     ShowPlayerHand(hand, handNo);
                     bool wasHandSplit = false;
 
