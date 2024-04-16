@@ -1,5 +1,3 @@
-using System.Reflection.Metadata;
-
 internal class Game
 {
     private int _noOfDecks;
@@ -15,6 +13,7 @@ internal class Game
         _noOfDecks = decks;
     }
 
+    #region MainGameplayLoops
     internal void StartGameLoop()
     {
         CreateDeck();
@@ -22,7 +21,7 @@ internal class Game
         while (true)
         {
             WriteBalance();
-            ShowMockHands();            
+            ShowMockHands();
 
             if (_player.Balance < 10)
             {
@@ -34,18 +33,31 @@ internal class Game
 
             int bet;
             bool betInputCorrect;
-            Console.WriteLine("You may bet from 10 to 100 USD, in increments of 10 USD.");
-            Console.WriteLine();
+            Console.Write("|                                                                              |\n");
+            Console.Write("|      ");
+            Console.Write("You may bet from $10 to $100, in increments of $10.");
+            Console.Write("                     |\n");
             do
             {
-                betInputCorrect = true;                
+                betInputCorrect = true;
+                Console.Write("|      ");
                 Console.Write("How much would you like to bet?");
+
                 if (_player.PreviousBet != null)
                 {
-                    Console.Write($" (leave blank to bet {_player.PreviousBet} USD)");
+                    Console.Write($" (leave blank to bet ${_player.PreviousBet}.)");
+                    Console.Write("               |\n");
                 }
-                Console.Write("\n");
+                else
+                {
+                    Console.Write("                                         |\n");
+                }
+                Console.Write("|                                                                              |\n");
+                Console.Write("|                                 $                                            |\n");
+                Console.Write("|                                                                              |\n");
+                Console.Write("--------------------------------------------------------------------------------\n");
 
+                Console.SetCursorPosition(36, Console.CursorTop - 3);
                 string? betString = Console.ReadLine();
                 if (betString == "" && _player.PreviousBet != null)
                 {
@@ -101,7 +113,7 @@ internal class Game
                 if (!hand.Stand)
                 {
                     DrawPlayfield(_player, hand, handNo);
-                    Console.WriteLine();
+                    Console.Write("|                                                                              |\n");
 
                     bool wasHandSplit = false;
 
@@ -140,7 +152,11 @@ internal class Game
                     if (hand.CurrentTotal() > 21)
                     {
                         hand.Stand = true;
-                        Console.WriteLine("You are bust. Press any key to continue...");
+                        Console.Write("|             ");
+                        Console.Write("You are bust. Press any key to continue...");
+                        Console.Write("                       |\n");
+                        Console.Write("|                                                                              |\n");
+                        Console.Write("--------------------------------------------------------------------------------\n");
                         Console.ReadKey(true);
                         DrawHeader();
                     }
@@ -165,21 +181,28 @@ internal class Game
                         do
                         {
                             actionInputCorrect = true;
-
-                            Console.Write("H: Hit, S: Stand");
+                            string optionString = "|            H: Hit, S: Stand";
                             if (_player.Balance >= hand.Bet)
                             {
-                                Console.Write(", D: Double down");
+                                optionString += ", D: Double down";
                             }
                             if (_player.DecisionsMade == 0)
                             {
                                 if (hand.IsSplitPossible())
                                 {
-                                    Console.Write(", P: Split");
+                                    optionString += (", P: Split");
                                 }
-                                Console.Write(", U: Surrender");
+                                optionString += (", U: Surrender");
                             }
-                            Console.Write("\n");
+
+                            Console.Write(optionString);
+                            for (int i = 0; i < 79 - optionString.Length; i++)
+                            {
+                                Console.Write(" ");
+                            }
+                            Console.Write("|\n");
+                            Console.Write("|                                                                              |\n");
+                            Console.Write("--------------------------------------------------------------------------------\n");
 
                             var input = Console.ReadKey(true);
                             DrawHeader();
@@ -263,7 +286,7 @@ internal class Game
         while (running)
         {
             WriteBalance();
-            Console.WriteLine();
+            Console.Write("|                                                                              |\n");
 
             if (_dealer.Hand.CurrentTotal() < 17)
             {
@@ -282,8 +305,12 @@ internal class Game
 
             if (running)
             {
+                Console.Write("|                                                                              |\n");
+                Console.Write("|           ");
                 Console.Write("Dealer draws . ");
+                Console.Write("                                                          |\n");
                 Thread.Sleep(333);
+                Console.SetCursorPosition(27, Console.CursorTop - 1);
                 Console.Write(". ");
                 Thread.Sleep(333);
                 Console.Write(". ");
@@ -373,12 +400,14 @@ internal class Game
             }
         }
 
-        Console.WriteLine();
+        Console.Write("|                                                                              |\n");
         Console.WriteLine("Press any key to start a new round...");
         Console.ReadKey(true);
         DrawHeader();
     }
+    #endregion
 
+    #region UtilityFunctions
     internal void Reshuffle()
     {
         _deck = new List<Card>(_discardPile);
@@ -426,11 +455,25 @@ internal class Game
             }
         }
     }
+    #endregion
 
+    #region UI
     internal void ShowDealerHand()
     {
-        Console.WriteLine("Dealer's hand: " + _dealer.ShowHand());
-        Console.WriteLine("Dealer's total: " + _dealer.Hand.CurrentTotal());
+        Console.Write("|                        ");
+        Console.Write("Dealer's hand: " + _dealer.ShowHand());
+        for (int i = 0; i < 39 - _dealer.ShowHand().Length; i++)
+        {
+            Console.Write(" ");
+        }
+        Console.Write("|\n");
+        Console.Write("|                        ");
+        Console.Write("Dealer's total: " + _dealer.Hand.CurrentTotal());
+        for (int i = 0; i < 38 - _dealer.Hand.CurrentTotal().ToString().Length; i++)
+        {
+            Console.Write(" ");
+        }
+        Console.Write("|\n");
     }
 
     internal void ShowPlayerHand(Hand hand, int handNo)
@@ -443,9 +486,20 @@ internal class Game
         }
         else
         {
-            Console.WriteLine($"Your hand: {hand.Show()}");
-            Console.WriteLine($"Your total: {hand.CurrentTotal()}");
-            Console.WriteLine();
+            Console.Write("|                        ");
+            Console.Write($"Your hand: {hand.Show()}");
+            for (int i = 0; i < 43 - hand.Show().Length; i++)
+            {
+                Console.Write(" ");
+            }
+            Console.Write("|\n");
+            Console.Write("|                        ");
+            Console.Write($"Your total: {hand.CurrentTotal()}");
+            for (int i = 0; i < 42 - hand.CurrentTotal().ToString().Length; i++)
+            {
+                Console.Write(" ");
+            }
+            Console.Write("|\n");
         }
     }
 
@@ -461,7 +515,7 @@ internal class Game
 
         Console.Write("| ");
         Console.Write("C# Blackjack Alpha v0.001");
-        for (int i = 0; i < 58; i++)
+        for (int i = 0; i < 52; i++)
         {
             Console.Write(" ");
         }
@@ -472,12 +526,11 @@ internal class Game
             Console.Write("-");
         }
         Console.Write("\n");
-        Console.WriteLine();
     }
 
     internal void WriteBalance()
     {
-        //Console.Write("| ");
+        Console.Write("| ");
         Console.Write("Balance: ");
         string balance = _player.Balance.ToString();
         for (int i = 0; i < 5 - balance.Length; i++)
@@ -485,26 +538,24 @@ internal class Game
             Console.Write(" ");
         }
         Console.Write(balance + " $");
-        //for (int i = 0; i < 61; i++)
-        //{
-        //    Console.Write(" ");
-        //}
-        //Console.Write("|");
-        Console.Write("\n");
+        Console.Write("                                                             |\n");
     }
 
     internal void DrawPlayfield(Player player, Hand hand, int handNo)
     {
+
         WriteBalance();
-        Console.WriteLine();
+        Console.Write("|                                                                              |\n");
         ShowDealerHand();
+        Console.Write("|                                                                              |\n");
         ShowPlayerHand(hand, handNo);
-        WriteBet(_player);
+        ShowBet(player);
+        Console.Write("|                                                                              |\n");
     }
 
-    internal void WriteBet(Player player)
+    internal void ShowBet(Player player)
     {
-        Console.Write($"You bet {player.Hands[0].Bet} $.");
+        Console.Write($"|                        Your bet: ${player.Hands[0].Bet}");
         if (player.InsuranceTaken != null)
         {
             if ((bool)player.InsuranceTaken)
@@ -516,16 +567,19 @@ internal class Game
                 Console.Write(" Insurance not taken.");
             }
         }
-        Console.Write("\n");
+        Console.Write("                                         |\n");
     }
 
     internal void ShowMockHands()
     {
-        Console.WriteLine();
-        Console.WriteLine("Dealer's hand:");
-        Console.WriteLine("Dealer's total:");
-        Console.WriteLine($"Your hand:");
-        Console.WriteLine($"Your total:");
-        Console.WriteLine();
+        Console.Write("|                                                                              |\n");
+        Console.Write("|                        Dealer's hand:                                        |\n");
+        Console.Write("|                        Dealer's total:                                       |\n");
+        Console.Write("|                                                                              |\n");
+        Console.Write("|                        Your hand:                                            |\n");
+        Console.Write("|                        Your total:                                           |\n");
+        Console.Write("|                        Your bet:                                             |\n");
     }
+
+    #endregion
 }
