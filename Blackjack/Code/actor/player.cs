@@ -7,12 +7,12 @@ internal class Player : Actor
     private int _decisionsMade = 0;
     private int? _previousBet = null;
 
-    public string Name { get => _name; set => _name = value; }
-    public int Balance { get => _balance; set => _balance = value; }
-    public bool? InsuranceTaken { get => _insuranceTaken; }
-    public bool Surrendered { get => _surrendered; }
-    public int DecisionsMade { get => _decisionsMade; set => _decisionsMade = value; }
-    public int? PreviousBet { get => _previousBet; }
+    internal string Name { get => _name; set => _name = value; }
+    internal int Balance { get => _balance; set => _balance = value; }
+    internal bool? InsuranceTaken { get => _insuranceTaken; }
+    internal bool Surrendered { get => _surrendered; }
+    internal int DecisionsMade { get => _decisionsMade; set => _decisionsMade = value; }
+    internal int? PreviousBet { get => _previousBet; }
 
     internal Player(string name, int balance)
     {

@@ -1,3 +1,5 @@
+using System.Reflection.Metadata;
+
 internal class Game
 {
     private int _noOfDecks;
@@ -20,12 +22,7 @@ internal class Game
         while (true)
         {
             WriteBalance();
-            Console.WriteLine();
-            Console.WriteLine("Dealer's hand:");
-            Console.WriteLine("Dealer's total:");
-            Console.WriteLine($"Your hand:");
-            Console.WriteLine($"Your total:");
-            Console.WriteLine();
+            ShowMockHands();            
 
             if (_player.Balance < 10)
             {
@@ -59,12 +56,7 @@ internal class Game
                     betInputCorrect = false;
                     DrawHeader();
                     WriteBalance();
-                    Console.WriteLine();
-                    Console.WriteLine("Dealer's hand:");
-                    Console.WriteLine("Dealer's total:");
-                    Console.WriteLine($"Your hand:");
-                    Console.WriteLine($"Your total:");
-                    Console.WriteLine();
+                    ShowMockHands();
                     Console.WriteLine("You may bet from 10 to 100 USD, in increments of 10 USD.");
                     Console.WriteLine("Invalid input. Try again.");
                 }
@@ -74,12 +66,7 @@ internal class Game
                     betInputCorrect = false;
                     DrawHeader();
                     WriteBalance();
-                    Console.WriteLine();
-                    Console.WriteLine("Dealer's hand:");
-                    Console.WriteLine("Dealer's total:");
-                    Console.WriteLine($"Your hand:");
-                    Console.WriteLine($"Your total:");
-                    Console.WriteLine();
+                    ShowMockHands();
                     Console.WriteLine("You may bet from 10 to 100 USD, in increments of 10 USD.");
                     Console.WriteLine("Invalid input. Try again.");
                 }
@@ -113,11 +100,7 @@ internal class Game
                 handNo++;
                 if (!hand.Stand)
                 {
-                    WriteBalance();
-                    Console.WriteLine();
-                    ShowDealerHand();
-                    ShowPlayerHand(hand, handNo);
-                    WriteBet(_player);
+                    DrawPlayfield(_player, hand, handNo);
                     Console.WriteLine();
 
                     bool wasHandSplit = false;
@@ -144,21 +127,13 @@ internal class Game
                             {
                                 insuranceInputCorrect = false;
                                 DrawHeader();
-                                WriteBalance();
-                                Console.WriteLine();
-                                ShowDealerHand();
-                                ShowPlayerHand(hand, handNo);
-                                WriteBet(_player);
+                                DrawPlayfield(_player, hand, handNo);
                                 Console.WriteLine("Invalid input. Try again.");
                             }
                         } while (!insuranceInputCorrect);
 
                         DrawHeader();
-                        WriteBalance();
-                        Console.WriteLine();
-                        ShowDealerHand();
-                        ShowPlayerHand(hand, handNo);
-                        WriteBet(_player);
+                        DrawPlayfield(_player, hand, handNo);
                         Console.WriteLine();
                     }
 
@@ -219,7 +194,6 @@ internal class Game
                                 case ConsoleKey.S:
                                     {
                                         hand.Stand = true;
-                                        //Console.WriteLine("You decided to stand.");
                                         break;
                                     }
                                 case ConsoleKey.D:
@@ -267,11 +241,7 @@ internal class Game
 
                             if (!actionInputCorrect)
                             {
-                                WriteBalance();
-                                Console.WriteLine();
-                                ShowDealerHand();
-                                ShowPlayerHand(hand, handNo);
-                                WriteBet(_player);
+                                DrawPlayfield(_player, hand, handNo);
                                 Console.WriteLine("Invalid input. Try again.");
                             }
                         } while (!actionInputCorrect);
@@ -523,10 +493,13 @@ internal class Game
         Console.Write("\n");
     }
 
-    internal void DrawPlayfield()
+    internal void DrawPlayfield(Player player, Hand hand, int handNo)
     {
-        DrawHeader();
         WriteBalance();
+        Console.WriteLine();
+        ShowDealerHand();
+        ShowPlayerHand(hand, handNo);
+        WriteBet(_player);
     }
 
     internal void WriteBet(Player player)
@@ -544,5 +517,15 @@ internal class Game
             }
         }
         Console.Write("\n");
+    }
+
+    internal void ShowMockHands()
+    {
+        Console.WriteLine();
+        Console.WriteLine("Dealer's hand:");
+        Console.WriteLine("Dealer's total:");
+        Console.WriteLine($"Your hand:");
+        Console.WriteLine($"Your total:");
+        Console.WriteLine();
     }
 }
