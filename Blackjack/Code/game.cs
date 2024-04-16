@@ -149,7 +149,6 @@ internal class Game
                                 ShowDealerHand();
                                 ShowPlayerHand(hand, handNo);
                                 WriteBet(_player);
-                                Console.WriteLine();
                                 Console.WriteLine("Invalid input. Try again.");
                             }
                         } while (!insuranceInputCorrect);
@@ -278,6 +277,10 @@ internal class Game
                         } while (!actionInputCorrect);
                         _player.DecisionsMade++;
                     }
+                    if (wasHandSplit)
+                    {
+                        break;
+                    }
                 }
             }
         }
@@ -286,6 +289,7 @@ internal class Game
     internal void DealerLoop()
     {
         bool running = true;
+        int handNo = 0;
         while (running)
         {
             WriteBalance();
@@ -303,12 +307,12 @@ internal class Game
 
             foreach (Hand hand in _player.Hands)
             {
-                ShowPlayerHand(hand);
+                ShowPlayerHand(hand, handNo++);
             }
 
             if (running)
             {
-                Console.Write(". ");
+                Console.Write("Dealer draws . ");
                 Thread.Sleep(333);
                 Console.Write(". ");
                 Thread.Sleep(333);
@@ -459,7 +463,7 @@ internal class Game
         Console.WriteLine("Dealer's total: " + _dealer.Hand.CurrentTotal());
     }
 
-    internal void ShowPlayerHand(Hand hand, int handNo = 0)
+    internal void ShowPlayerHand(Hand hand, int handNo)
     {
         if (_player.Hands.Count > 1)
         {
@@ -486,7 +490,7 @@ internal class Game
         Console.Write("\n");
 
         Console.Write("| ");
-        Console.Write("C# Blackjack v0.001");
+        Console.Write("C# Blackjack Alpha v0.001");
         for (int i = 0; i < 58; i++)
         {
             Console.Write(" ");

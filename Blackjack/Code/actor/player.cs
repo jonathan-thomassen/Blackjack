@@ -87,6 +87,7 @@ internal class Player : Actor
         _surrendered = false;
         _decisionsMade = 0;
         _previousBet = Hands[0].Bet;
+        _insuranceTaken = null;
     }
 
     internal Hand DealNewHand(List<Card> discardPile, int bet)
