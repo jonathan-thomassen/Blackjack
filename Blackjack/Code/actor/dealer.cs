@@ -4,7 +4,13 @@ internal class Dealer : Actor
 
     internal string ShowHand()
     {
-        return Hands[0].Show();
+        if (Hands.Count > 0)
+        {
+            return Hands[0].Show();
+        } else
+        {
+            return "";
+        }
     }
 
     internal Hand DealNewHand(List<Card> discardPile)
