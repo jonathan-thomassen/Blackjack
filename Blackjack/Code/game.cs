@@ -62,7 +62,6 @@ internal class Game
                     Console.WriteLine("Your balance is insufficient. Try a lower amount.");
                     Console.WriteLine();
                 }
-
             } while (!betInputCorrect);
 
             DrawHeader();
@@ -110,15 +109,25 @@ internal class Game
 
                     if (_player.DecisionsMade == 0 && _dealer.Hand.Cards[0].Value == 1 && _player.Balance >= (hand.Bet / 2))
                     {
-                        Console.WriteLine("Dealer drew an Ace. Would you like to take insurance? Y/N");
-
-                        var input = Console.ReadKey(true);
-                        Console.WriteLine();
-
-                        if (input.Key == ConsoleKey.Y)
+                        bool insuranceInputCorrect;
+                        do
                         {
-                            _player.TakeInsurance(hand.Bet / 2);
-                        }
+                            insuranceInputCorrect = true;
+                            Console.WriteLine("Dealer drew an Ace. Would you like to take insurance? Y/N");
+                            var input = Console.ReadKey(true);
+                            Console.WriteLine();
+
+                            if (input.Key == ConsoleKey.Y)
+                            {
+                                _player.TakeInsurance(hand.Bet / 2);
+                            }
+                            else if (input.Key != ConsoleKey.N)
+                            {
+                                insuranceInputCorrect = false;
+                                Console.WriteLine("Invalid input. Try again.");
+                                Console.WriteLine();
+                            }
+                        } while (!insuranceInputCorrect);
                     }
 
                     if (hand.CurrentTotal() > 21)

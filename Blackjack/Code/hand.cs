@@ -13,7 +13,8 @@ internal class Hand
         _bet = 0;
     }
 
-    internal Hand(int bet) {
+    internal Hand(int bet)
+    {
         _bet = bet;
     }
 
@@ -63,13 +64,11 @@ internal class Hand
 
         for (int i = 0; i < noOfAces; i++)
         {
-            if (total + 11 > 21)
+            int aceTotal = (noOfAces - i) * 11 + i;
+            if (total + aceTotal < 22)
             {
-                total++;
-            }
-            else
-            {
-                total += 11;
+                total += aceTotal;
+                break;
             }
         }
 
