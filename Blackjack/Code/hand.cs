@@ -62,13 +62,26 @@ internal class Hand
             }
         }
 
-        for (int i = 0; i < noOfAces; i++)
+        if (noOfAces > 1)
         {
-            int aceTotal = (noOfAces - i) * 11 + i;
-            if (total + aceTotal < 22)
+            if (total + 11 + noOfAces - 1 < 22)
             {
-                total += aceTotal;
-                break;
+                total += 11 + noOfAces - 1;
+            }
+            else
+            {
+                total += noOfAces;
+            }
+        }
+        else if (noOfAces == 1)
+        {
+            if (total + 11 < 22)
+            {
+                total += 11;
+            }
+            else
+            {
+                total += 1;
             }
         }
 
