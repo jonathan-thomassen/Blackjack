@@ -1,14 +1,15 @@
-internal class Player : Actor {
-    private string _name;    
+internal class Player : Actor
+{
+    private string _name;
     private int _balance;
-    private int _insurance = 0;
+    private bool? _insuranceTaken = null;
     private bool _surrendered = false;
     private int _decisionsMade = 0;
     private int? _previousBet = null;
 
     public string Name { get => _name; set => _name = value; }
     public int Balance { get => _balance; set => _balance = value; }
-    public int Insurance { get => _insurance; set => _insurance = value; }
+    public bool? InsuranceTaken { get => _insuranceTaken; }
     public bool Surrendered { get => _surrendered; }
     public int DecisionsMade { get => _decisionsMade; set => _decisionsMade = value; }
     public int? PreviousBet { get => _previousBet; }
@@ -27,15 +28,19 @@ internal class Player : Actor {
         _balance = balance;
     }
 
-    internal void AddNewHand(Card card, int bet) {
+    internal void AddNewHand(Card card, int bet)
+    {
         Hand hand = new Hand(bet);
         hand.AddCard(card);
         Hands.Add(hand);
     }
 
-    internal bool Stand() {
-        foreach (Hand hand in Hands) {
-            if (!hand.Stand) {
+    internal bool Stand()
+    {
+        foreach (Hand hand in Hands)
+        {
+            if (!hand.Stand)
+            {
                 return false;
             }
         }
@@ -43,11 +48,14 @@ internal class Player : Actor {
         return true;
     }
 
-    internal bool IsBust() {
+    internal bool IsBust()
+    {
         bool returnBool = true;
 
-        foreach (Hand hand in Hands) {
-            if (hand.CurrentTotal() < 22) {
+        foreach (Hand hand in Hands)
+        {
+            if (hand.CurrentTotal() < 22)
+            {
                 returnBool = false;
                 break;
             }
@@ -56,15 +64,15 @@ internal class Player : Actor {
         return returnBool;
     }
 
-    internal void TakeInsurance(int amount)
+    internal void InsuranceDecision(bool insuranceTaken)
     {
-        _balance -= amount;
-        _insurance = 2 * amount;
+        _balance -= Hands[0].Bet / 2;
+        _insuranceTaken = insuranceTaken;
     }
 
     internal void PayInsurance()
     {
-        _balance += _insurance;
+        _balance += Hands[0].Bet;
     }
 
     internal void Surrender()

@@ -1,6 +1,5 @@
 internal class Game
 {
-    private bool _playLoopConcluded = false;
     private int _noOfDecks;
     private Dealer _dealer;
     private Player _player;
@@ -103,7 +102,7 @@ internal class Game
                     Console.WriteLine();
                     ShowDealerHand();
                     ShowPlayerHand(hand, handNo);
-                    WriteBet(hand);
+                    WriteBet(_player, hand);
                     Console.WriteLine();
 
                     bool wasHandSplit = false;
@@ -120,13 +119,23 @@ internal class Game
 
                             if (input.Key == ConsoleKey.Y)
                             {
-                                _player.TakeInsurance(hand.Bet / 2);
+                                _player.InsuranceDecision(true);
                             }
-                            else if (input.Key != ConsoleKey.N)
+                            else if (input.Key == ConsoleKey.N)
+                            {
+                                _player.InsuranceDecision(false);
+                            }
+                            else
                             {
                                 insuranceInputCorrect = false;
-                                Console.WriteLine("Invalid input. Try again.");
+                                DrawHeader();
+                                WriteBalance();
                                 Console.WriteLine();
+                                ShowDealerHand();
+                                ShowPlayerHand(hand, handNo);
+                                WriteBet(_player, hand);
+                                Console.WriteLine();
+                                Console.WriteLine("Invalid input. Try again.");
                             }
                         } while (!insuranceInputCorrect);
 
@@ -135,7 +144,7 @@ internal class Game
                         Console.WriteLine();
                         ShowDealerHand();
                         ShowPlayerHand(hand, handNo);
-                        WriteBet(hand);
+                        WriteBet(_player, hand);
                         Console.WriteLine();
                     }
 
@@ -243,29 +252,21 @@ internal class Game
                             }
 
                             if (!actionInputCorrect)
-                            {                                
+                            {
                                 WriteBalance();
                                 Console.WriteLine();
                                 ShowDealerHand();
                                 ShowPlayerHand(hand, handNo);
-                                WriteBet(hand);
+                                WriteBet(_player, hand);
                                 Console.WriteLine("Invalid input. Try again.");
                             }
                         } while (!actionInputCorrect);
                         _player.DecisionsMade++;
                     }
-                    if (wasHandSplit)
-                    {
-                        _playLoopConcluded = false;
-                        break;
-                    }
                 }
-
             }
         }
     }
-
-
 
     internal void DealerLoop()
     {
@@ -296,7 +297,12 @@ internal class Game
             {
                 //Console.WriteLine("Dealer will hit. Press any key to continue...");
                 //Console.ReadKey(true);
-                Thread.Sleep(1000);
+                Console.Write(".");
+                Thread.Sleep(500);
+                Console.Write(".");
+                Thread.Sleep(500);
+                Console.Write(".");
+                Thread.Sleep(500);
                 DrawHeader();
             }
         }
@@ -304,11 +310,11 @@ internal class Game
 
     internal void EndRound()
     {
-        if (_player.Insurance > 0)
+        if (_player.InsuranceTaken != null && (bool)_player.InsuranceTaken)
         {
             if (_dealer.HasBlackjack())
             {
-                Console.WriteLine("Dealer has blackjack. Insurance pays out and you get " + _player.Insurance + " USD.");
+                Console.WriteLine("Dealer has blackjack. Insurance pays out and you get " + _player.Hands[0].Bet + " USD.");
                 _player.PayInsurance();
             }
             else
@@ -508,11 +514,22 @@ internal class Game
     {
         DrawHeader();
         WriteBalance();
-
     }
 
-    internal void WriteBet(Hand hand)
+    internal void WriteBet(Player player, Hand hand)
     {
-        Console.WriteLine($"You bet {hand.Bet} $");
+        Console.Write($"You bet {hand.Bet} $.");
+        if (player.InsuranceTaken != null)
+        {
+            if ((bool)player.InsuranceTaken)
+            {
+                Console.Write(" Insurance taken.");
+            }
+            else
+            {
+                Console.Write(" Insurance not taken.");
+            }
+        }
+        Console.Write("\n");
     }
 }
