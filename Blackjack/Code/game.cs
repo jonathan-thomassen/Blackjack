@@ -204,8 +204,10 @@ internal class Game
                             Console.Write("|                                                                              |\n");
                             Console.Write("--------------------------------------------------------------------------------\n");
 
+                            Console.CursorVisible = false;
                             var input = Console.ReadKey(true);
                             DrawHeader();
+                            Console.CursorVisible = true;
 
                             switch (input.Key)
                             {
@@ -550,6 +552,8 @@ internal class Game
         Console.Write("|                                                                              |\n");
         ShowPlayerHand(hand, handNo);
         ShowBet(player);
+        Console.Write("|                                                                              |\n");
+        Console.Write("|                                                                              |\n");
         Console.Write("|                                                                              |\n");
     }
 
