@@ -19,17 +19,16 @@ internal class Game
     internal void StartGameLoop()
     {
         DrawHeader();
-        CreateDeck();
+        CreateDeck(true);
 
         while (true)
         {
             DrawBalance(_player, _deck);
             DrawEmptyLine();
-            DrawDealerHand(_dealer,true);
+            DrawDealerHand(_dealer, true);
             DrawEmptyLine();
-            DrawPlayerHand(_player,new Hand(), 0, true);
+            DrawPlayerHands(_player, true);
             DrawEmptyLine();
-            DrawBet(_player, true);
 
             if (_player.Balance < 10)
             {
@@ -72,9 +71,7 @@ internal class Game
                     DrawEmptyLine();
                     DrawDealerHand(_dealer, true);
                     DrawEmptyLine();
-                    DrawPlayerHand(_player, new Hand(), 0, true);
-                    DrawEmptyLine();
-                    DrawBet(_player, true);
+                    DrawPlayerHands(_player, true);
                     DrawEmptyLine();
                     DrawString("Invalid input. Try again.");
                 }
@@ -87,9 +84,7 @@ internal class Game
                     DrawEmptyLine();
                     DrawDealerHand(_dealer, true);
                     DrawEmptyLine();
-                    DrawPlayerHand(_player, new Hand(), 0, true);
-                    DrawEmptyLine();
-                    DrawBet(_player, true);
+                    DrawPlayerHands(_player, true);
                     DrawEmptyLine();
                     DrawString("Insufficient balance. Try again.");
                 }
@@ -294,7 +289,6 @@ internal class Game
     internal void DealerLoop()
     {
         bool running = true;
-        int handNo = 0;
         while (running)
         {
             DrawBalance(_player, _deck);
@@ -313,9 +307,8 @@ internal class Game
 
             foreach (Hand hand in _player.Hands)
             {
-                DrawPlayerHand(_player, hand, handNo++);
+                DrawPlayerHands(_player);
                 DrawEmptyLine();
-                DrawBet(_player);
             }
 
             DrawEmptyLine();
@@ -324,14 +317,14 @@ internal class Game
             {
                 DrawEmptyLine();
                 DrawEmptyLine();
-                Console.Write("│                     ");
+                Console.Write("│                        ");
                 Console.Write("Dealer draws . ");
-                Console.Write("                                          │\n");
+                Console.Write("                                       │\n");
                 DrawEmptyLine();
                 DrawEmptyLine();
                 DrawSolidLine(2);
                 Thread.Sleep(333);
-                Console.SetCursorPosition(34, Console.CursorTop - 4);
+                Console.SetCursorPosition(40, Console.CursorTop - 4);
                 Console.Write(". ");
                 Thread.Sleep(333);
                 Console.Write(". ");
@@ -466,17 +459,27 @@ internal class Game
         hand.Stand = true;
     }
 
-    internal void CreateDeck()
+    internal void CreateDeck(bool splitTest = false)
     {
-        for (int i = 0; i < _noOfDecks; i++)
+        if (!splitTest)
         {
-            for (int j = 0; j < 4; j++)
+            for (int i = 0; i < _noOfDecks; i++)
             {
-                for (int k = 1; k < 14; k++)
+                for (int j = 0; j < 4; j++)
                 {
-                    _deck.Add(new Card(i, (Suits)j, k));
+                    for (int k = 1; k < 14; k++)
+                    {
+                        _deck.Add(new Card(i, (Suits)j, k));
+                    }
                 }
             }
+        }
+        else
+        {
+            for (int i = 0; i < 52; i++)
+            {
+                _deck.Add(new Card(0, 0, 1));
+            }            
         }
     }
     #endregion

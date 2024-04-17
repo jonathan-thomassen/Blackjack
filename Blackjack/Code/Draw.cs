@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace Blackjack.Code
 {
@@ -60,49 +61,94 @@ namespace Blackjack.Code
             Console.Write("│\n");
         }
 
-        internal static void DrawPlayerHand(Player player, Hand hand, int handNo, bool mock = false)
+        internal static void DrawPlayerHands(Player player, bool mock = false)
         {
             if (!mock)
             {
-                if (player.Hands.Count > 1)
-                {
-                    Console.Write($"Your hand #{handNo}: ");
-                    hand.DrawHand();
-                    Console.Write($"Your hand #{handNo} total: {hand.CurrentTotal()}");
-                }
-                else
+                if (player.Hands.Count == 1)
                 {
                     Console.Write("│                          ");
                     Console.Write($"Your hand: ");
-                    hand.DrawHand();
+                    player.Hands[0].DrawHand();
 
-                    for (int i = 0; i < 42 - hand.Cards.Count * 3; i++)
+                    for (int i = 0; i < 42 - player.Hands[0].Cards.Count * 3; i++)
                     {
                         Console.Write(" ");
                     }
 
-                    foreach (Card card in hand.Cards)
+                    foreach (Card card in player.Hands[0].Cards)
                     {
                         if (card.Value == 10)
                         {
                             Console.Write("\b");
                         }
                     }
-
                     Console.Write("│\n");
                     Console.Write("│                          ");
-                    Console.Write($"Your total: {hand.CurrentTotal()}");
-                    for (int i = 0; i < 40 - hand.CurrentTotal().ToString().Length; i++)
+                    Console.Write($"Your total: {player.Hands[0].CurrentTotal()}");
+                    for (int i = 0; i < 40 - player.Hands[0].CurrentTotal().ToString().Length; i++)
+                    {
+                        Console.Write(" ");
+                    }
+                    Console.Write("│\n");
+
+                    Console.Write("│                          ");
+                    Console.Write($"Your bet: ${player.Hands[0].Bet}");
+                    for (int i = 0; i < 41 - player.Hands[0].Bet.ToString().Length; i++)
                     {
                         Console.Write(" ");
                     }
                     Console.Write("│\n");
                 }
+                else if (player.Hands.Count == 2)
+                {
+                    Console.Write("│               ");
+                    Console.Write($"Your hand #1: ");
+                    player.Hands[0].DrawHand();
+                    for (int i = 0; i < 20 - player.Hands[0].Cards.Count * 3; i++)
+                    {
+                        Console.Write(" ");
+                    }
+                    foreach (Card card in player.Hands[0].Cards)
+                    {
+                        if (card.Value == 10)
+                        {
+                            Console.Write("\b");
+                        }
+                    }
+                    Console.Write($"Your hand #2: ");
+                    player.Hands[1].DrawHand();
+                    for (int i = 0; i < 17 - player.Hands[1].Cards.Count * 3; i++)
+                    {
+                        Console.Write(" ");
+                    }
+                    foreach (Card card in player.Hands[1].Cards)
+                    {
+                        if (card.Value == 10)
+                        {
+                            Console.Write("\b");
+                        }
+                    }
+                    Console.Write("│\n");
+                    Console.Write("│               ");
+                    Console.Write($"Your total #1: {player.Hands[0].CurrentTotal()}");
+                    Console.Write("                ");
+                    Console.Write($"Your total #2: {player.Hands[1].CurrentTotal()}");
+                    Console.Write("             ");
+                    Console.Write("│\n");
+                    Console.Write("│               ");
+                    Console.Write($"Your bet #1: ${player.Hands[0].Bet}");
+                    Console.Write("                 ");
+                    Console.Write($"Your bet #2: ${player.Hands[0].Bet}");
+                    Console.Write("              ");
+                    Console.Write("│\n");
+                }                
             }
             else
             {
                 Console.WriteLine("│                          Your hand:                                          │");
                 Console.WriteLine("│                          Your total:                                         │");
+                Console.WriteLine("│                          Your bet:                                           │");
             }
         }
 
@@ -147,44 +193,43 @@ namespace Blackjack.Code
         internal static void DrawPlayfield(Player player, Dealer dealer, List<Card> deck, Hand hand, int handNo)
         {
 
-            DrawBalance(player,deck);
+            DrawBalance(player, deck);
             DrawEmptyLine();
             DrawDealerHand(dealer);
             DrawEmptyLine();
-            DrawPlayerHand(player, hand, handNo);
+            DrawPlayerHands(player);
             DrawEmptyLine();
-            DrawBet(player);
             DrawEmptyLine();
             DrawEmptyLine();
         }
 
-        internal static void DrawBet(Player player, bool mock = false)
-        {
-            string text = $"Your bet: ";
-            if (!mock)
-            {
-                text += player.Hands[0].Bet + "$";
-                if (player.InsuranceTaken != null)
-                {
-                    if ((bool)player.InsuranceTaken)
-                    {
-                        text += " Insurance taken.";
-                    }
-                    else
-                    {
-                        text += " Insurance not taken.";
-                    }
-                }
-            }
+        //internal static void DrawBet(Player player, bool mock = false)
+        //{
+        //    string text = $"Your bet: ";
+        //    if (!mock)
+        //    {
+        //        text += player.Hands[0].Bet + "$";
+        //        if (player.InsuranceTaken != null)
+        //        {
+        //            if ((bool)player.InsuranceTaken)
+        //            {
+        //                text += " Insurance taken.";
+        //            }
+        //            else
+        //            {
+        //                text += " Insurance not taken.";
+        //            }
+        //        }
+        //    }
 
-            Console.Write("│                          ");
-            Console.Write(text);
-            for (int i = 0; i < 52 - text.Length; i++)
-            {
-                Console.Write(" ");
-            }
-            Console.Write("│\n");
-        }
+        //    Console.Write("│                          ");
+        //    Console.Write(text);
+        //    for (int i = 0; i < 52 - text.Length; i++)
+        //    {
+        //        Console.Write(" ");
+        //    }
+        //    Console.Write("│\n");
+        //}
 
         internal static void DrawEmptyLine()
         {

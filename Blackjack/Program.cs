@@ -8,7 +8,7 @@
         Console.OutputEncoding = System.Text.Encoding.UTF8;
         Console.CursorVisible = false;
         Console.ForegroundColor = ConsoleColor.White;
-        Console.BackgroundColor = ConsoleColor.DarkGreen;
+        Console.BackgroundColor = ConsoleColor.DarkGray;
 
         game.StartGameLoop();
     }
