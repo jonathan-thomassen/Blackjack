@@ -10,7 +10,6 @@
         Console.ForegroundColor = ConsoleColor.White;
         Console.BackgroundColor = ConsoleColor.DarkGreen;
 
-        game.DrawHeader();
         game.StartGameLoop();
     }
 }
