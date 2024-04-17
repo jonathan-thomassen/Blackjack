@@ -20,8 +20,12 @@
 
         while (true)
         {
-            WriteBalance();
-            ShowMockHands();
+            DrawBalance();
+            DrawEmptyLine();
+            DrawDealerHand(true);
+            DrawEmptyLine();
+            DrawPlayerHand(new Hand(), 0, true);
+            DrawBet(_player, true);
 
             if (_player.Balance < 10)
             {
@@ -61,8 +65,9 @@
                 {
                     betInputCorrect = false;
                     DrawHeader();
-                    WriteBalance();
-                    ShowMockHands();
+                    DrawBalance();
+                    DrawDealerHand(true);
+                    DrawPlayerHand(new Hand(), 0, true);
                     DrawString(betAsk);
                     DrawString("Invalid input. Try again.");
                 }
@@ -71,8 +76,9 @@
                 {
                     betInputCorrect = false;
                     DrawHeader();
-                    WriteBalance();
-                    ShowMockHands();
+                    DrawBalance();
+                    DrawDealerHand(true);
+                    DrawPlayerHand(new Hand(), 0, true);
                     DrawString(betAsk);
                     DrawString("Insufficient balance. Try again.");
                 }
@@ -276,7 +282,7 @@
         int handNo = 0;
         while (running)
         {
-            WriteBalance();
+            DrawBalance();
             DrawEmptyLine();
 
             if (_dealer.Hand.CurrentTotal() < 17)
@@ -287,13 +293,13 @@
 
             if (_dealer.Hand.CurrentTotal() > 16) running = false;
 
-            ShowDealerHand();
+            DrawDealerHand();
             DrawEmptyLine();
 
             foreach (Hand hand in _player.Hands)
             {
-                ShowPlayerHand(hand, handNo++);
-                ShowBet(_player);
+                DrawPlayerHand(hand, handNo++);
+                DrawBet(_player);
             }
 
             DrawEmptyLine();
@@ -460,52 +466,102 @@
     #endregion
 
     #region UI
-    internal void ShowDealerHand()
+
+    internal void DrawDealerHand(bool mock = false)
     {
         DrawEmptyLine();
         Console.Write("│                        ");
         Console.Write("Dealer's hand: ");
-        _dealer.DrawHand();
-        for (int i = 0; i < 39 - _dealer.Hand.Cards.Count*2; i++)
+        if (!mock)
         {
-            Console.Write(" ");
+            _dealer.DrawHand();
+
+            for (int i = 0; i < 40 - _dealer.Hand.Cards.Count * 3; i++)
+            {
+                Console.Write(" ");
+            }
+
+            foreach (Card card in _dealer.Hand.Cards)
+            {
+                if (card.Value == 10)
+                {
+                    Console.Write("\b");
+                }
+            }
         }
+        else
+        {
+            for (int i = 0; i < 39; i++)
+            {
+                Console.Write(" ");
+            }
+        }
+
         Console.Write("│\n");
         Console.Write("│                        ");
-        Console.Write("Dealer's total: " + _dealer.Hand.CurrentTotal());
-        for (int i = 0; i < 38 - _dealer.Hand.CurrentTotal().ToString().Length; i++)
+        Console.Write("Dealer's total: ");
+        if (!mock)
         {
-            Console.Write(" ");
+            Console.Write(_dealer.Hand.CurrentTotal());
+
+            for (int i = 0; i < 38 - _dealer.Hand.CurrentTotal().ToString().Length; i++)
+            {
+                Console.Write(" ");
+            }
+        }
+        else
+        {
+            for (int i = 0; i < 38; i++)
+            {
+                Console.Write(" ");
+            }
         }
         Console.Write("│\n");
     }
 
-    internal void ShowPlayerHand(Hand hand, int handNo)
+    internal void DrawPlayerHand(Hand hand, int handNo, bool mock = false)
     {
-        if (_player.Hands.Count > 1)
+        if (!mock)
         {
-            Console.Write($"Your hand #{handNo}: ");
-            hand.DrawHand();
-            Console.Write($"Your hand #{handNo} total: {hand.CurrentTotal()}");
+            if (_player.Hands.Count > 1)
+            {
+                Console.Write($"Your hand #{handNo}: ");
+                hand.DrawHand();
+                Console.Write($"Your hand #{handNo} total: {hand.CurrentTotal()}");
+            }
+            else
+            {
+                Console.Write("│                        ");
+                Console.Write($"Your hand: ");
+                hand.DrawHand();
+
+                for (int i = 0; i < 44 - hand.Cards.Count * 3; i++)
+                {
+                    Console.Write(" ");
+                }
+
+                foreach (Card card in hand.Cards)
+                {
+                    if (card.Value == 10)
+                    {
+                        Console.Write("\b");
+                    }
+                }
+
+                Console.Write("│\n");
+                Console.Write("│                        ");
+                Console.Write($"Your total: {hand.CurrentTotal()}");
+                for (int i = 0; i < 42 - hand.CurrentTotal().ToString().Length; i++)
+                {
+                    Console.Write(" ");
+                }
+                Console.Write("│\n");
+            }
         }
         else
         {
-            Console.Write("│                        ");
-            Console.Write($"Your hand: ");
-            hand.DrawHand();
-
-            for (int i = 0; i < 44 - (hand.Cards.Count * 3); i++)
-            {
-                Console.Write(" ");
-            }
-            Console.Write("│\n");
-            Console.Write("│                        ");
-            Console.Write($"Your total: {hand.CurrentTotal()}");
-            for (int i = 0; i < 42 - hand.CurrentTotal().ToString().Length; i++)
-            {
-                Console.Write(" ");
-            }
-            Console.Write("│\n");
+            Console.WriteLine("│                        Your hand:                                            │");
+            Console.WriteLine("│                        Your total:                                           │");
         }
     }
 
@@ -526,7 +582,7 @@
         DrawSolidLine(1);
     }
 
-    internal void WriteBalance()
+    internal void DrawBalance()
     {
         Console.Write("│ ");
         Console.Write("Balance: ");
@@ -542,44 +598,43 @@
     internal void DrawPlayfield(Player player, Hand hand, int handNo)
     {
 
-        WriteBalance();
+        DrawBalance();
         DrawEmptyLine();
-        ShowDealerHand();
+        DrawDealerHand();
         DrawEmptyLine();
-        ShowPlayerHand(hand, handNo);
-        ShowBet(player);
+        DrawPlayerHand(hand, handNo);
+        DrawBet(player);
         DrawEmptyLine();
         DrawEmptyLine();
         DrawEmptyLine();
     }
 
-    internal void ShowBet(Player player)
+    internal void DrawBet(Player player, bool mock = false)
     {
-        Console.Write($"│                        Your bet: ${player.Hands[0].Bet}");
-        if (player.InsuranceTaken != null)
+        string text = $"Your bet: ";
+        if (!mock)
         {
-            if ((bool)player.InsuranceTaken)
+            text += player.Hands[0].Bet + "$";
+            if (player.InsuranceTaken != null)
             {
-                Console.Write(" Insurance taken.");
-            }
-            else
-            {
-                Console.Write(" Insurance not taken.");
+                if ((bool)player.InsuranceTaken)
+                {
+                    text += (" Insurance taken.");
+                }
+                else
+                {
+                    text += (" Insurance not taken.");
+                }
             }
         }
-        Console.Write("                                         │\n");
-    }
 
-    internal void ShowMockHands()
-    {
-        DrawEmptyLine();
-        DrawEmptyLine();
-        Console.Write("│                        Dealer's hand:                                        │\n");
-        Console.Write("│                        Dealer's total:                                       │\n");
-        DrawEmptyLine();
-        Console.Write("│                        Your hand:                                            │\n");
-        Console.Write("│                        Your total:                                           │\n");
-        Console.Write("│                        Your bet:                                             │\n");
+        Console.Write("│                        ");
+        Console.Write(text);
+        for (int i = 0; i < 54 - text.Length; i++)
+        {
+            Console.Write(" ");
+        }
+        Console.Write("│\n");
     }
 
     internal void DrawEmptyLine()
