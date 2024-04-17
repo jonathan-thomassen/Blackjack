@@ -2,14 +2,12 @@ internal class Dealer : Actor
 {
     internal Hand Hand { get => Hands[0] ; set => Hands[0] = value; }
 
-    internal string ShowHand()
+    internal void DrawHand()
     {
         if (Hands.Count > 0)
         {
-            return Hands[0].Show();
-        } else
-        {
-            return "";
+            Hands[0].DrawHand();
+            
         }
     }
 

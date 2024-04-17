@@ -1,3 +1,5 @@
+using System;
+
 internal class Card {
     private readonly int _deckNo;
     private readonly Suits _suit;
@@ -12,71 +14,70 @@ internal class Card {
         _value = value;
     }
 
-    internal string Show() {
-        string returnString = "";
-       
+    internal void DrawCard()
+    {
         switch (_suit)
         {
             case Suits.Spades:
-            {
-                returnString += "♠";
-                break;
-            }  
+                {
+                    Console.ForegroundColor = ConsoleColor.Black;
+                    Console.Write("♠");
+                    break;
+                }
             case Suits.Hearts:
-            {
-                returnString += "♥";
-                break;
-            }
+                {
+                    Console.ForegroundColor = ConsoleColor.DarkRed;
+                    Console.Write("♥");
+                    break;
+                }
             case Suits.Diamonds:
-            {
-                returnString += "♦";
-                break;
-            }
+                {
+                    Console.ForegroundColor = ConsoleColor.DarkRed;
+                    Console.Write("♦");
+                    break;
+                }
             case Suits.Clubs:
-            {
-                returnString += "♣";
-                break;
-            }  
-            default:
-            {
-                break;
-            }            
+                {
+                    Console.ForegroundColor = ConsoleColor.Black;
+                    Console.Write("♣");
+                    break;
+                }
         }
 
         switch (Value)
         {
             case 1:
-            {
-                returnString += "A";
-                break;
-            }
+                {
+                    Console.Write("A");
+                    break;
+                }
 
             case 11:
-            {
-                returnString += "J";
-                break;
-            }
+                {
+                    Console.Write("J");
+                    break;
+                }
 
             case 12:
-            {
-                returnString += "Q";
-                break;
-            }
+                {
+                    Console.Write("Q");
+                    break;
+                }
 
             case 13:
-            {
-                returnString += "K";
-                break;
-            }
-            
+                {
+                    Console.Write("K");
+                    break;
+                }
+
             default:
-            {
-                returnString += Value;
-                break;
-            }
+                {
+                    Console.Write(Value);
+                    break;
+                }
         }
 
-        return returnString;
+        Console.ForegroundColor = ConsoleColor.White;        
     }
 
     public override string ToString()

@@ -119,6 +119,7 @@
                             insuranceInputCorrect = true;
                             DrawString("Dealer drew an Ace. Would you like to take insurance? Y/N");
                             DrawEmptyLine();
+                            DrawEmptyLine();
                             DrawSolidLine(2);
                             var input = Console.ReadKey(true);
 
@@ -136,7 +137,7 @@
                                 DrawHeader();
                                 DrawPlayfield(_player, hand, handNo);
                                 DrawString("Invalid input. Try again.");
-                            }                            
+                            }
                         } while (!insuranceInputCorrect);
 
                         DrawHeader();
@@ -163,6 +164,8 @@
                         {
                             DrawString("You got a Blackjack! Press any key to continue...");
                         }
+                        DrawEmptyLine();
+                        DrawSolidLine(2);
                         Console.ReadKey(true);
                         DrawHeader();
                     }
@@ -292,7 +295,6 @@
                 ShowPlayerHand(hand, handNo++);
                 ShowBet(_player);
             }
-
 
             DrawEmptyLine();
 
@@ -460,9 +462,11 @@
     #region UI
     internal void ShowDealerHand()
     {
+        DrawEmptyLine();
         Console.Write("│                        ");
-        Console.Write("Dealer's hand: " + _dealer.ShowHand());
-        for (int i = 0; i < 39 - _dealer.ShowHand().Length; i++)
+        Console.Write("Dealer's hand: ");
+        _dealer.DrawHand();
+        for (int i = 0; i < 39 - _dealer.Hand.Cards.Count*2; i++)
         {
             Console.Write(" ");
         }
@@ -480,14 +484,17 @@
     {
         if (_player.Hands.Count > 1)
         {
-            Console.WriteLine($"Your hand #{handNo}: {hand.Show()}");
-            Console.WriteLine($"Your hand #{handNo} total: {hand.CurrentTotal()}");
+            Console.Write($"Your hand #{handNo}: ");
+            hand.DrawHand();
+            Console.Write($"Your hand #{handNo} total: {hand.CurrentTotal()}");
         }
         else
         {
             Console.Write("│                        ");
-            Console.Write($"Your hand: {hand.Show()}");
-            for (int i = 0; i < 43 - hand.Show().Length; i++)
+            Console.Write($"Your hand: ");
+            hand.DrawHand();
+
+            for (int i = 0; i < 44 - (hand.Cards.Count * 3); i++)
             {
                 Console.Write(" ");
             }
@@ -565,6 +572,7 @@
 
     internal void ShowMockHands()
     {
+        DrawEmptyLine();
         DrawEmptyLine();
         Console.Write("│                        Dealer's hand:                                        │\n");
         Console.Write("│                        Dealer's total:                                       │\n");

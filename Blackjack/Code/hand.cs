@@ -29,16 +29,14 @@ internal class Hand
         _cards.Add(card);
     }
 
-    internal virtual string Show()
+    internal virtual void DrawHand()
     {
-        string returnString = "";
-
         foreach (Card card in Cards)
         {
-            returnString += card.Show() + " ";
+            card.DrawCard();
+            Console.Write(" ");
         }
-
-        return returnString;
+        Console.Write("\b");
     }
 
     internal virtual int CurrentTotal()
