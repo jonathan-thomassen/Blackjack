@@ -9,7 +9,7 @@ namespace Blackjack.Code
 {
     internal static class Draw
     {
-        internal static void DrawDealerHand(Dealer dealer, bool mock = false)
+        private static void DrawDealerHand(Dealer dealer, bool mock = false)
         {
             DrawEmptyLine();
             Console.Write("│                          ");
@@ -61,7 +61,7 @@ namespace Blackjack.Code
             Console.Write("│\n");
         }
 
-        internal static void DrawPlayerHands(Player player, bool mock = false)
+        private static void DrawPlayerHands(Player player, bool mock = false)
         {
             if (!mock)
             {
@@ -138,11 +138,17 @@ namespace Blackjack.Code
                     Console.Write("│\n");
                     Console.Write("│               ");
                     Console.Write($"Your bet #1: ${player.Hands[0].Bet}");
-                    Console.Write("                 ");
-                    Console.Write($"Your bet #2: ${player.Hands[0].Bet}");
-                    Console.Write("              ");
+                    for (int i = 0; i < 19 - player.Hands[0].Bet.ToString().Length; i++)
+                    {
+                        Console.Write(" ");
+                    }
+                    Console.Write($"Your bet #2: ${player.Hands[1].Bet}");
+                    for (int i = 0; i < 16 - player.Hands[1].Bet.ToString().Length; i++)
+                    {
+                        Console.Write(" ");
+                    }
                     Console.Write("│\n");
-                }                
+                }
             }
             else
             {
@@ -190,46 +196,17 @@ namespace Blackjack.Code
             Console.Write(" │\n");
         }
 
-        internal static void DrawPlayfield(Player player, Dealer dealer, List<Card> deck, Hand hand, int handNo)
+        internal static void DrawPlayfield(Player player, Dealer dealer, List<Card> deck, bool mock = false)
         {
 
             DrawBalance(player, deck);
             DrawEmptyLine();
-            DrawDealerHand(dealer);
-            DrawEmptyLine();
-            DrawPlayerHands(player);
+            DrawDealerHand(dealer, mock);
             DrawEmptyLine();
             DrawEmptyLine();
+            DrawPlayerHands(player, mock);
             DrawEmptyLine();
         }
-
-        //internal static void DrawBet(Player player, bool mock = false)
-        //{
-        //    string text = $"Your bet: ";
-        //    if (!mock)
-        //    {
-        //        text += player.Hands[0].Bet + "$";
-        //        if (player.InsuranceTaken != null)
-        //        {
-        //            if ((bool)player.InsuranceTaken)
-        //            {
-        //                text += " Insurance taken.";
-        //            }
-        //            else
-        //            {
-        //                text += " Insurance not taken.";
-        //            }
-        //        }
-        //    }
-
-        //    Console.Write("│                          ");
-        //    Console.Write(text);
-        //    for (int i = 0; i < 52 - text.Length; i++)
-        //    {
-        //        Console.Write(" ");
-        //    }
-        //    Console.Write("│\n");
-        //}
 
         internal static void DrawEmptyLine()
         {

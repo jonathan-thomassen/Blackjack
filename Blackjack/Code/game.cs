@@ -1,4 +1,5 @@
-﻿using static Blackjack.Code.Draw;
+﻿using System.Reflection.Metadata;
+using static Blackjack.Code.Draw;
 
 internal class Game
 {
@@ -19,16 +20,11 @@ internal class Game
     internal void StartGameLoop()
     {
         DrawHeader();
-        CreateDeck(true);
+        CreateDeck();
 
         while (true)
         {
-            DrawBalance(_player, _deck);
-            DrawEmptyLine();
-            DrawDealerHand(_dealer, true);
-            DrawEmptyLine();
-            DrawPlayerHands(_player, true);
-            DrawEmptyLine();
+            DrawPlayfield(_player, _dealer, _deck, true);
 
             if (_player.Balance < 10)
             {
@@ -39,10 +35,10 @@ internal class Game
             int bet;
             bool betInputCorrect;
             DrawEmptyLine();
-            DrawString("You may bet from $10 to $100, in increments of $10.");
             do
             {
                 betInputCorrect = true;
+                DrawString("You may bet from $10 to $100, in increments of $10.");
                 string betAsk = "How much would you like to bet?";
 
                 if (_player.PreviousBet != null)
@@ -56,9 +52,11 @@ internal class Game
                 DrawEmptyLine();
                 DrawSolidLine(2);
                 Console.SetCursorPosition(39, Console.CursorTop - 3);
+
                 Console.CursorVisible = true;
                 string? betString = Console.ReadLine();
                 Console.CursorVisible = false;
+
                 if (betString == "" && _player.PreviousBet != null)
                 {
                     bet = (int)_player.PreviousBet;
@@ -67,25 +65,13 @@ internal class Game
                 {
                     betInputCorrect = false;
                     DrawHeader();
-                    DrawBalance(_player, _deck);
-                    DrawEmptyLine();
-                    DrawDealerHand(_dealer, true);
-                    DrawEmptyLine();
-                    DrawPlayerHands(_player, true);
-                    DrawEmptyLine();
+                    DrawPlayfield(_player, _dealer, _deck, true);
                     DrawString("Invalid input. Try again.");
-                }
-
-                if (bet > _player.Balance)
+                } else if (bet > _player.Balance)
                 {
                     betInputCorrect = false;
                     DrawHeader();
-                    DrawBalance(_player, _deck);
-                    DrawEmptyLine();
-                    DrawDealerHand(_dealer, true);
-                    DrawEmptyLine();
-                    DrawPlayerHands(_player, true);
-                    DrawEmptyLine();
+                    DrawPlayfield(_player, _dealer, _deck, true);
                     DrawString("Insufficient balance. Try again.");
                 }
             } while (!betInputCorrect);
@@ -118,17 +104,19 @@ internal class Game
                 handNo++;
                 if (!hand.Stand)
                 {
-                    DrawPlayfield(_player, _dealer, _deck, hand, handNo);
-                    DrawEmptyLine();
+                    DrawPlayfield(_player, _dealer, _deck);
 
                     bool wasHandSplit = false;
 
                     if (_player.DecisionsMade == 0 && _dealer.Hand.Cards[0].Value == 1 && _player.Balance >= (hand.Bet / 2))
                     {
+                        DrawEmptyLine();
+                        DrawEmptyLine();
+                        DrawEmptyLine();
                         bool insuranceInputCorrect;
                         do
                         {
-                            insuranceInputCorrect = true;
+                            insuranceInputCorrect = true;                            
                             DrawString("Dealer drew an Ace. Would you like to take insurance? Y/N");
                             DrawEmptyLine();
                             DrawEmptyLine();
@@ -147,15 +135,13 @@ internal class Game
                             {
                                 insuranceInputCorrect = false;
                                 DrawHeader();
-                                DrawPlayfield(_player, _dealer, _deck, hand, handNo);
+                                DrawPlayfield(_player, _dealer, _deck);
                                 DrawString("Invalid input. Try again.");
-                                DrawEmptyLine();
                             }
                         } while (!insuranceInputCorrect);
 
                         DrawHeader();
-                        DrawPlayfield(_player, _dealer, _deck, hand, handNo);
-                        DrawEmptyLine();
+                        DrawPlayfield(_player, _dealer, _deck);
                     }
 
                     if (hand.CurrentTotal() > 21)
@@ -204,6 +190,18 @@ internal class Game
                                     optionString += (", P: Split");
                                 }
                                 optionString += (", U: Surrender");
+                            }
+
+                            DrawEmptyLine();
+                            DrawEmptyLine();
+
+                            if (_player.Hands.Count > 1)
+                            {
+                                DrawString("Decision for hand #" + handNo + ":");
+                            }
+                            else
+                            {
+                                DrawEmptyLine();
                             }
 
                             DrawString(optionString);
@@ -271,7 +269,7 @@ internal class Game
 
                             if (!actionInputCorrect)
                             {
-                                DrawPlayfield(_player, _dealer, _deck, hand, handNo);
+                                DrawPlayfield(_player, _dealer, _deck);
                                 DrawString("Invalid input. Try again.");
                             }
                         } while (!actionInputCorrect);
@@ -291,27 +289,15 @@ internal class Game
         bool running = true;
         while (running)
         {
-            DrawBalance(_player, _deck);
-            DrawEmptyLine();
-
             if (_dealer.Hand.CurrentTotal() < 17)
             {
                 Card card = DrawACard();
                 _dealer.Hand.AddCard(card);
             }
 
-            if (_dealer.Hand.CurrentTotal() > 16) running = false;
+            DrawPlayfield(_player, _dealer, _deck);
 
-            DrawDealerHand(_dealer);
-            DrawEmptyLine();
-
-            foreach (Hand hand in _player.Hands)
-            {
-                DrawPlayerHands(_player);
-                DrawEmptyLine();
-            }
-
-            DrawEmptyLine();
+            if (_dealer.Hand.CurrentTotal() > 16) running = false;            
 
             if (running)
             {
@@ -322,9 +308,10 @@ internal class Game
                 Console.Write("                                       │\n");
                 DrawEmptyLine();
                 DrawEmptyLine();
+                DrawEmptyLine();
                 DrawSolidLine(2);
                 Thread.Sleep(333);
-                Console.SetCursorPosition(40, Console.CursorTop - 4);
+                Console.SetCursorPosition(40, Console.CursorTop - 5);
                 Console.Write(". ");
                 Thread.Sleep(333);
                 Console.Write(". ");
@@ -335,8 +322,7 @@ internal class Game
     }
 
     internal void EndRound()
-    {
-        DrawEmptyLine();
+    {        
         if (_player.InsuranceTaken != null && (bool)_player.InsuranceTaken)
         {
             if (_dealer.HasBlackjack())
@@ -355,8 +341,21 @@ internal class Game
         }
         else
         {
+            int handNo = 1;
             foreach (Hand hand in _player.Hands)
             {
+                DrawEmptyLine();
+                DrawEmptyLine();
+                bool awaitInput = false;
+                if (_player.Hands.Count > 1)
+                {
+                    DrawString("Result for hand #" + handNo++ + ":");
+                    awaitInput = true;
+                }
+                else
+                {
+                    DrawEmptyLine();
+                }
                 if (hand.CurrentTotal() < 22)
                 {
                     if (hand.IsBlackjack())
@@ -412,11 +411,28 @@ internal class Game
                 {
                     DrawString("You are bust. Dealer wins.");
                 }
+
+                if (awaitInput)
+                {
+                    DrawString("Press any key to continue...");
+                    DrawEmptyLine();
+                    DrawSolidLine(2);
+                    Console.ReadKey(true);
+                    DrawHeader();
+                    DrawPlayfield(_player, _dealer, _deck);                   
+                }
             }
+        }
+
+        if (_player.Hands.Count > 1)
+        {
+            DrawEmptyLine();
+            DrawEmptyLine();
         }
 
         DrawEmptyLine();
         DrawString("Press any key to start a new round...");
+        DrawEmptyLine();
         DrawEmptyLine();
         DrawSolidLine(2);
         Console.ReadKey(true);
@@ -479,7 +495,7 @@ internal class Game
             for (int i = 0; i < 52; i++)
             {
                 _deck.Add(new Card(0, 0, 1));
-            }            
+            }
         }
     }
     #endregion
