@@ -6,6 +6,7 @@
         Game game = new Game(player, 1);
 
         Console.OutputEncoding = System.Text.Encoding.UTF8;
+        Console.CursorVisible = false;
 
         game.DrawHeader();
         game.StartGameLoop();
