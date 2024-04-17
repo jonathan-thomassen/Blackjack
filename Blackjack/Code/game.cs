@@ -25,6 +25,7 @@
             DrawDealerHand(true);
             DrawEmptyLine();
             DrawPlayerHand(new Hand(), 0, true);
+            DrawEmptyLine();
             DrawBet(_player, true);
 
             if (_player.Balance < 10)
@@ -35,7 +36,6 @@
 
             int bet;
             bool betInputCorrect;
-            DrawEmptyLine();
             DrawEmptyLine();
             DrawString("You may bet from $10 to $100, in increments of $10.");
             do
@@ -64,11 +64,15 @@
                 else if (!int.TryParse(betString, out bet) || !(bet > 0 && bet <= 100 && bet % 10 == 0))
                 {
                     betInputCorrect = false;
-                    DrawHeader();
+                    DrawHeader();                    
                     DrawBalance();
+                    DrawEmptyLine();
                     DrawDealerHand(true);
+                    DrawEmptyLine();
                     DrawPlayerHand(new Hand(), 0, true);
-                    DrawString(betAsk);
+                    DrawEmptyLine();
+                    DrawBet(_player, true);
+                    DrawEmptyLine();
                     DrawString("Invalid input. Try again.");
                 }
 
@@ -77,9 +81,13 @@
                     betInputCorrect = false;
                     DrawHeader();
                     DrawBalance();
+                    DrawEmptyLine();
                     DrawDealerHand(true);
+                    DrawEmptyLine();
                     DrawPlayerHand(new Hand(), 0, true);
-                    DrawString(betAsk);
+                    DrawEmptyLine();
+                    DrawBet(_player, true);
+                    DrawEmptyLine();
                     DrawString("Insufficient balance. Try again.");
                 }
             } while (!betInputCorrect);
@@ -143,6 +151,7 @@
                                 DrawHeader();
                                 DrawPlayfield(_player, hand, handNo);
                                 DrawString("Invalid input. Try again.");
+                                DrawEmptyLine();
                             }
                         } while (!insuranceInputCorrect);
 
@@ -153,6 +162,7 @@
                     if (hand.CurrentTotal() > 21)
                     {
                         hand.Stand = true;
+                        DrawEmptyLine();
                         DrawString("You are bust. Press any key to continue...");
                         DrawEmptyLine();
                         DrawSolidLine(2);
@@ -170,6 +180,7 @@
                         {
                             DrawString("You got a Blackjack! Press any key to continue...");
                         }
+                        DrawEmptyLine();
                         DrawEmptyLine();
                         DrawSolidLine(2);
                         Console.ReadKey(true);
@@ -299,6 +310,7 @@
             foreach (Hand hand in _player.Hands)
             {
                 DrawPlayerHand(hand, handNo++);
+                DrawEmptyLine();
                 DrawBet(_player);
             }
 
@@ -308,9 +320,9 @@
             {
                 DrawEmptyLine();
                 DrawEmptyLine();
-                Console.Write("│                  ");
+                Console.Write("│                     ");
                 Console.Write("Dealer draws . ");
-                Console.Write("                                             │\n");
+                Console.Write("                                          │\n");
                 DrawEmptyLine();
                 DrawEmptyLine();
                 DrawSolidLine(2);
@@ -332,7 +344,7 @@
         {
             if (_dealer.HasBlackjack())
             {
-                DrawString("Dealer has blackjack. Insurance pays out and you get " + _player.Hands[0].Bet + " USD.");
+                DrawString("Dealer has blackjack. Insurance pays out and you get $" + _player.Hands[0].Bet + ".");
                 _player.PayInsurance();
             }
             else
@@ -342,7 +354,7 @@
         }
         if (_player.Surrendered)
         {
-            DrawString("You have surrendered. You get " + _player.Hands[0].Bet / 2 + " USD back.");
+            DrawString("You have surrendered. You get $" + _player.Hands[0].Bet / 2 + " back.");
         }
         else
         {
@@ -354,12 +366,12 @@
                     {
                         if (!_dealer.HasBlackjack())
                         {
-                            DrawString("Blackjack! You win " + (hand.Bet + ((hand.Bet * 3) / 2)) + " USD!");
+                            DrawString("Blackjack! You win $" + (hand.Bet + ((hand.Bet * 3) / 2)) + "!");
                             _player.Balance += hand.Bet + ((hand.Bet * 3) / 2);
                         }
                         else
                         {
-                            DrawString("Both you and the dealer have blackjack. Push. You get your bet of " + hand.Bet + " USD back.");
+                            DrawString("Both you and the dealer have blackjack. Push. You get your bet of $" + hand.Bet + " back.");
                             _player.Balance += hand.Bet;
                         }
                     }
@@ -369,7 +381,7 @@
                         {
                             case > 0:
                                 {
-                                    DrawString("Your hand wins and nets you " + hand.Bet * 2 + " USD!");
+                                    DrawString("Your hand wins and nets you $" + hand.Bet * 2 + "!");
                                     _player.Balance += hand.Bet * 2;
                                     break;
                                 }
@@ -381,7 +393,7 @@
                                     }
                                     else
                                     {
-                                        DrawString("Push. You get your bet of " + hand.Bet + " USD back.");
+                                        DrawString("Push. You get your bet of $" + hand.Bet + " back.");
                                         _player.Balance += hand.Bet;
                                     }
                                     break;
@@ -395,7 +407,7 @@
                     }
                     else
                     {
-                        DrawString("Dealer is bust! You win " + hand.Bet * 2 + " USD!");
+                        DrawString("Dealer is bust! You win $" + hand.Bet * 2 + "!");
                         _player.Balance += hand.Bet * 2;
                     }
                 }
@@ -470,13 +482,13 @@
     internal void DrawDealerHand(bool mock = false)
     {
         DrawEmptyLine();
-        Console.Write("│                        ");
+        Console.Write("│                          ");
         Console.Write("Dealer's hand: ");
         if (!mock)
         {
             _dealer.DrawHand();
 
-            for (int i = 0; i < 40 - _dealer.Hand.Cards.Count * 3; i++)
+            for (int i = 0; i < 38 - _dealer.Hand.Cards.Count * 3; i++)
             {
                 Console.Write(" ");
             }
@@ -491,27 +503,27 @@
         }
         else
         {
-            for (int i = 0; i < 39; i++)
+            for (int i = 0; i < 37; i++)
             {
                 Console.Write(" ");
             }
         }
 
         Console.Write("│\n");
-        Console.Write("│                        ");
+        Console.Write("│                          ");
         Console.Write("Dealer's total: ");
         if (!mock)
         {
             Console.Write(_dealer.Hand.CurrentTotal());
 
-            for (int i = 0; i < 38 - _dealer.Hand.CurrentTotal().ToString().Length; i++)
+            for (int i = 0; i < 36 - _dealer.Hand.CurrentTotal().ToString().Length; i++)
             {
                 Console.Write(" ");
             }
         }
         else
         {
-            for (int i = 0; i < 38; i++)
+            for (int i = 0; i < 36; i++)
             {
                 Console.Write(" ");
             }
@@ -531,11 +543,11 @@
             }
             else
             {
-                Console.Write("│                        ");
+                Console.Write("│                          ");
                 Console.Write($"Your hand: ");
                 hand.DrawHand();
 
-                for (int i = 0; i < 44 - hand.Cards.Count * 3; i++)
+                for (int i = 0; i < 42 - hand.Cards.Count * 3; i++)
                 {
                     Console.Write(" ");
                 }
@@ -549,9 +561,9 @@
                 }
 
                 Console.Write("│\n");
-                Console.Write("│                        ");
+                Console.Write("│                          ");
                 Console.Write($"Your total: {hand.CurrentTotal()}");
-                for (int i = 0; i < 42 - hand.CurrentTotal().ToString().Length; i++)
+                for (int i = 0; i < 40 - hand.CurrentTotal().ToString().Length; i++)
                 {
                     Console.Write(" ");
                 }
@@ -560,8 +572,8 @@
         }
         else
         {
-            Console.WriteLine("│                        Your hand:                                            │");
-            Console.WriteLine("│                        Your total:                                           │");
+            Console.WriteLine("│                          Your hand:                                          │");
+            Console.WriteLine("│                          Your total:                                         │");
         }
     }
 
@@ -603,8 +615,8 @@
         DrawDealerHand();
         DrawEmptyLine();
         DrawPlayerHand(hand, handNo);
-        DrawBet(player);
         DrawEmptyLine();
+        DrawBet(player);
         DrawEmptyLine();
         DrawEmptyLine();
     }
@@ -619,18 +631,18 @@
             {
                 if ((bool)player.InsuranceTaken)
                 {
-                    text += (" Insurance taken.");
+                    text += " Insurance taken.";
                 }
                 else
                 {
-                    text += (" Insurance not taken.");
+                    text += " Insurance not taken.";
                 }
             }
         }
 
-        Console.Write("│                        ");
+        Console.Write("│                          ");
         Console.Write(text);
-        for (int i = 0; i < 54 - text.Length; i++)
+        for (int i = 0; i < 52 - text.Length; i++)
         {
             Console.Write(" ");
         }
