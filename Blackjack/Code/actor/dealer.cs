@@ -15,7 +15,6 @@ internal class Dealer : Actor
         if (Hands.Count > 0)
         {
             Hands[0].DrawHand();
-
         }
     }
 

@@ -117,7 +117,7 @@ internal class Game
                         do
                         {
                             insuranceInputCorrect = true;
-                            DrawString("Dealer drew an Ace. Would you like to take insurance? Y/N");
+                            DrawString($"Dealer drew an Ace. Would you like to take insurance for ${hand.Bet / 2}? Y/N");
                             DrawEmptyLine();
                             DrawEmptyLine();
                             DrawSolidLine(2);
@@ -170,7 +170,7 @@ internal class Game
                         }
                         else
                         {
-                            DrawString("You got a Blackjack! Press any key to continue...");
+                            DrawString("You got Blackjack! Press any key to continue...");
                         }
                         DrawEmptyLine();
                         DrawEmptyLine();
@@ -317,20 +317,32 @@ internal class Game
                 {
                     // Logic for determining Soft 17
 
-                    int cardNo;
-                    for (cardNo = 0; cardNo < _dealer.Hand.Cards.Count; cardNo++)
+                    int? ace = 0;
+                    int n = 0;
+
+                    foreach (Card c in _dealer.Hand.Cards)
                     {
-                        if (_dealer.Hand.Cards[cardNo].Value == 1)
+                        if (c.Value == 1)
                         {
-                            Hand testHand = new Hand();
-                            testHand.Cards.AddRange(_dealer.Hand.Cards);
-                            testHand.Cards.Remove(_dealer.Hand.Cards[cardNo]);
-                            if (testHand.CurrentTotal() == 16)
-                            {
-                                running = false;
-                            }
+                            ace = n;
                             break;
                         }
+                        n++;
+                    }
+
+                    if (ace != null)
+                    {
+                        Hand testHand = new Hand();
+                        testHand.Cards.AddRange(_dealer.Hand.Cards);
+                        testHand.Cards.Remove(_dealer.Hand.Cards[(int)ace]);
+                        if (testHand.CurrentTotal() == 16)
+                        {
+                            running = false;
+                        }
+                    }
+                    else
+                    {
+                        running = false;
                     }
                 }
                 else
@@ -338,7 +350,6 @@ internal class Game
                     running = false;
                 }
             }
-
 
             if (running)
             {
