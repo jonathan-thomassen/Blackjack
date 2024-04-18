@@ -14,6 +14,8 @@ internal class Card {
 
     internal void DrawCard()
     {
+        Console.BackgroundColor = ConsoleColor.White;
+
         switch (_suit)
         {
             case Suits.Spades:
@@ -49,25 +51,21 @@ internal class Card {
                     Console.Write("A");
                     break;
                 }
-
             case 11:
                 {
                     Console.Write("J");
                     break;
                 }
-
             case 12:
                 {
                     Console.Write("Q");
                     break;
                 }
-
             case 13:
                 {
                     Console.Write("K");
                     break;
                 }
-
             default:
                 {
                     Console.Write(Value);
@@ -75,6 +73,7 @@ internal class Card {
                 }
         }
 
-        Console.ForegroundColor = ConsoleColor.White;        
+        Console.ForegroundColor = ConsoleColor.White;
+        Console.BackgroundColor = ConsoleColor.DarkGreen;
     }
 }
