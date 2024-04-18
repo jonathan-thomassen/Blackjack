@@ -19,7 +19,7 @@ internal class Game
     internal void StartGameLoop()
     {
         DrawHeader();
-        CreateDeck(true);
+        CreateDeck();
 
         while (true)
         {
@@ -331,6 +331,7 @@ internal class Game
                             }
                             break;
                         }
+                        running = false;
                     }
                 }
                 else
