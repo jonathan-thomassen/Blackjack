@@ -105,14 +105,11 @@ internal class Hand
         return false;
     }
 
-    internal bool IsSplitPossible()
+    internal bool IsSplitPossible(Player player)
     {
-        if (Cards.Count == 2)
+        if (Cards.Count == 2 && Cards[0].Value == Cards[1].Value && player.Balance >= _bet)
         {
-            if (Cards[0].Value == Cards[1].Value)
-            {
-                return true;
-            }
+            return true;
         }
 
         return false;
@@ -120,7 +117,7 @@ internal class Hand
 
     internal bool Split(Player player)
     {
-        if (IsSplitPossible())
+        if (IsSplitPossible(player))
         {
             player.AddNewHand(Cards[1], _bet);
             Cards.Remove(Cards[1]);

@@ -1,5 +1,4 @@
-﻿using System.Reflection.Metadata;
-using static Blackjack.Code.Draw;
+﻿using static Blackjack.Code.Draw;
 
 internal class Game
 {
@@ -67,7 +66,8 @@ internal class Game
                     DrawHeader();
                     DrawPlayfield(_player, _dealer, _deck, true);
                     DrawString("Invalid input. Try again.");
-                } else if (bet > _player.Balance)
+                }
+                else if (bet > _player.Balance)
                 {
                     betInputCorrect = false;
                     DrawHeader();
@@ -116,7 +116,7 @@ internal class Game
                         bool insuranceInputCorrect;
                         do
                         {
-                            insuranceInputCorrect = true;                            
+                            insuranceInputCorrect = true;
                             DrawString("Dealer drew an Ace. Would you like to take insurance? Y/N");
                             DrawEmptyLine();
                             DrawEmptyLine();
@@ -148,7 +148,10 @@ internal class Game
                     {
                         hand.Stand = true;
                         DrawEmptyLine();
+                        DrawEmptyLine();
                         DrawString("You are bust. Press any key to continue...");
+                        DrawEmptyLine();
+                        DrawEmptyLine();
                         DrawEmptyLine();
                         DrawSolidLine(2);
                         Console.ReadKey(true);
@@ -157,6 +160,8 @@ internal class Game
                     else if (hand.CurrentTotal() == 21)
                     {
                         hand.Stand = true;
+                        DrawEmptyLine();
+                        DrawEmptyLine();
                         if (!_player.HasBlackjack())
                         {
                             DrawString("21! You stand. Press any key to continue...");
@@ -167,117 +172,127 @@ internal class Game
                         }
                         DrawEmptyLine();
                         DrawEmptyLine();
+                        DrawEmptyLine();
                         DrawSolidLine(2);
                         Console.ReadKey(true);
                         DrawHeader();
                     }
                     else
                     {
-                        bool actionInputCorrect;
-
-                        do
+                        if (hand.Cards.Count < 2)
                         {
-                            actionInputCorrect = true;
-                            string optionString = "H: Hit, S: Stand";
-                            if (_player.Balance >= hand.Bet)
-                            {
-                                optionString += ", D: Double down";
-                            }
-                            if (_player.DecisionsMade == 0)
-                            {
-                                if (hand.IsSplitPossible())
-                                {
-                                    optionString += (", P: Split");
-                                }
-                                optionString += (", U: Surrender");
-                            }
-
-                            DrawEmptyLine();
-                            DrawEmptyLine();
-
-                            if (_player.Hands.Count > 1)
-                            {
-                                DrawString("Decision for hand #" + handNo + ":");
-                            }
-                            else
-                            {
-                                DrawEmptyLine();
-                            }
-
-                            DrawString(optionString);
-                            DrawEmptyLine();
-                            DrawEmptyLine();
-                            DrawSolidLine(2);
-
-                            var input = Console.ReadKey(true);
                             DrawHeader();
+                            Hit(hand);
+                        }
+                        else
+                        {
+                            bool actionInputCorrect;
 
-                            switch (input.Key)
+                            do
                             {
-                                case ConsoleKey.H:
+                                actionInputCorrect = true;
+                                string optionString = "H: Hit, S: Stand";
+                                if (_player.Balance >= hand.Bet)
+                                {
+                                    optionString += ", D: Double down";
+                                }
+                                if (_player.DecisionsMade == 0)
+                                {
+                                    if (hand.IsSplitPossible(_player))
                                     {
-                                        Hit(hand);
-                                        break;
+                                        optionString += (", P: Split");
                                     }
-                                case ConsoleKey.S:
-                                    {
-                                        hand.Stand = true;
-                                        break;
-                                    }
-                                case ConsoleKey.D:
-                                    {
-                                        if (_player.Balance >= hand.Bet)
-                                        {
-                                            DoubleDown(hand);
-                                        }
-                                        else
-                                        {
-                                            actionInputCorrect = false;
-                                        }
-                                        break;
-                                    }
-                                case ConsoleKey.P:
-                                    {
-                                        if (_player.DecisionsMade == 0 && hand.IsSplitPossible())
-                                        {
-                                            wasHandSplit = hand.Split(_player);
-                                        }
-                                        else
-                                        {
-                                            actionInputCorrect = false;
-                                        }
-                                        break;
-                                    }
-                                case ConsoleKey.U:
-                                    {
-                                        if (_player.DecisionsMade == 0)
-                                        {
-                                            _player.Surrender();
-                                        }
-                                        else
-                                        {
-                                            actionInputCorrect = false;
-                                        }
-                                        break;
-                                    }
-                                default:
-                                    {
-                                        actionInputCorrect = false;
-                                        break;
-                                    }
-                            }
+                                    optionString += (", U: Surrender");
+                                }
 
-                            if (!actionInputCorrect)
+                                DrawEmptyLine();
+                                DrawEmptyLine();
+
+                                if (_player.Hands.Count > 1)
+                                {
+                                    DrawString("Decision for hand #" + handNo + ":");
+                                }
+                                else
+                                {
+                                    DrawEmptyLine();
+                                }
+
+                                DrawString(optionString);
+                                DrawEmptyLine();
+                                DrawEmptyLine();
+                                DrawSolidLine(2);
+
+                                var input = Console.ReadKey(true);
+                                DrawHeader();
+
+                                switch (input.Key)
+                                {
+                                    case ConsoleKey.H:
+                                        {
+                                            Hit(hand);
+                                            break;
+                                        }
+                                    case ConsoleKey.S:
+                                        {
+                                            hand.Stand = true;
+                                            break;
+                                        }
+                                    case ConsoleKey.D:
+                                        {
+                                            if (_player.Balance >= hand.Bet)
+                                            {
+                                                DoubleDown(hand);
+                                            }
+                                            else
+                                            {
+                                                actionInputCorrect = false;
+                                            }
+                                            break;
+                                        }
+                                    case ConsoleKey.P:
+                                        {
+                                            if (_player.DecisionsMade == 0 && hand.IsSplitPossible(_player))
+                                            {
+                                                wasHandSplit = hand.Split(_player);
+                                            }
+                                            else
+                                            {
+                                                actionInputCorrect = false;
+                                            }
+                                            break;
+                                        }
+                                    case ConsoleKey.U:
+                                        {
+                                            if (_player.DecisionsMade == 0)
+                                            {
+                                                _player.Surrender();
+                                            }
+                                            else
+                                            {
+                                                actionInputCorrect = false;
+                                            }
+                                            break;
+                                        }
+                                    default:
+                                        {
+                                            actionInputCorrect = false;
+                                            break;
+                                        }
+                                }
+
+                                if (!actionInputCorrect)
+                                {
+                                    DrawPlayfield(_player, _dealer, _deck);
+                                    DrawString("Invalid input. Try again.");
+                                }
+                            } while (!actionInputCorrect);
+                            _player.DecisionsMade++;
+
+                            if (wasHandSplit)
                             {
-                                DrawPlayfield(_player, _dealer, _deck);
-                                DrawString("Invalid input. Try again.");
+                                break;
                             }
-                        } while (!actionInputCorrect);
-                        _player.DecisionsMade++;
-                    }
-                    if (wasHandSplit)
-                    {
-                        break;
+                        }
                     }
                 }
             }
@@ -297,7 +312,7 @@ internal class Game
 
             DrawPlayfield(_player, _dealer, _deck);
 
-            if (_dealer.Hand.CurrentTotal() > 16) running = false;            
+            if (_dealer.Hand.CurrentTotal() > 16) running = false;
 
             if (running)
             {
@@ -322,7 +337,7 @@ internal class Game
     }
 
     internal void EndRound()
-    {        
+    {
         if (_player.InsuranceTaken != null && (bool)_player.InsuranceTaken)
         {
             if (_dealer.HasBlackjack())
@@ -337,6 +352,7 @@ internal class Game
         }
         if (_player.Surrendered)
         {
+            DrawEmptyLine();
             DrawString("You have surrendered. You get $" + _player.Hands[0].Bet / 2 + " back.");
         }
         else
@@ -344,11 +360,11 @@ internal class Game
             int handNo = 1;
             foreach (Hand hand in _player.Hands)
             {
-                DrawEmptyLine();
-                DrawEmptyLine();
                 bool awaitInput = false;
                 if (_player.Hands.Count > 1)
                 {
+                    DrawEmptyLine();
+                    DrawEmptyLine();
                     DrawString("Result for hand #" + handNo++ + ":");
                     awaitInput = true;
                 }
@@ -419,7 +435,7 @@ internal class Game
                     DrawSolidLine(2);
                     Console.ReadKey(true);
                     DrawHeader();
-                    DrawPlayfield(_player, _dealer, _deck);                   
+                    DrawPlayfield(_player, _dealer, _deck);
                 }
             }
         }

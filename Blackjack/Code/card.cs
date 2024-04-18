@@ -1,5 +1,3 @@
-using System;
-
 internal class Card {
     private readonly int _deckNo;
     private readonly Suits _suit;
