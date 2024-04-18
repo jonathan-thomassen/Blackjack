@@ -190,6 +190,7 @@ internal class Game
                         {
                             bool actionInputCorrect;
 
+                            DrawEmptyLine();
                             do
                             {
                                 actionInputCorrect = true;
@@ -206,8 +207,7 @@ internal class Game
                                     }
                                     optionString += (", U: Surrender");
                                 }
-
-                                DrawEmptyLine();
+                                
                                 DrawEmptyLine();
 
                                 if (_player.Hands.Count > 1)
