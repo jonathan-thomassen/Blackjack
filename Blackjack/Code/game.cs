@@ -317,7 +317,7 @@ internal class Game
                 {
                     // Logic for determining Soft 17
 
-                    int? ace = 0;
+                    int? ace = null;
                     int n = 0;
 
                     foreach (Card c in _dealer.Hand.Cards)
