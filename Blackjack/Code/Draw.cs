@@ -125,9 +125,15 @@
                     Console.Write("│\n");
                     Console.Write("│               ");
                     Console.Write($"Your total #1: {player.Hands[0].CurrentTotal()}");
-                    Console.Write("                ");
+                    for (int i = 0; i < 18 - player.Hands[0].CurrentTotal().ToString().Length; i++)
+                    {
+                        Console.Write(" ");
+                    }
                     Console.Write($"Your total #2: {player.Hands[1].CurrentTotal()}");
-                    Console.Write("             ");
+                    for (int i = 0; i < 15 - player.Hands[1].CurrentTotal().ToString().Length; i++)
+                    {
+                        Console.Write(" ");
+                    }
                     Console.Write("│\n");
                     Console.Write("│               ");
                     Console.Write($"Your bet #1: ${player.Hands[0].Bet}");

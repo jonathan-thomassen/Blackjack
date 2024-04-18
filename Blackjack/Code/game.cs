@@ -8,10 +8,10 @@ internal class Game
     private List<Card> _deck = new List<Card>();
     private List<Card> _discardPile = new List<Card>();
 
-    internal Game(Player player, int decks)
+    internal Game(Player player, int decks, bool standOnSoft17)
     {
         _player = player;
-        _dealer = new Dealer();
+        _dealer = new Dealer(standOnSoft17);
         _noOfDecks = decks;
     }
 
@@ -19,7 +19,7 @@ internal class Game
     internal void StartGameLoop()
     {
         DrawHeader();
-        CreateDeck();
+        CreateDeck(true);
 
         while (true)
         {
@@ -136,7 +136,9 @@ internal class Game
                                 insuranceInputCorrect = false;
                                 DrawHeader();
                                 DrawPlayfield(_player, _dealer, _deck);
+                                DrawEmptyLine();
                                 DrawString("Invalid input. Try again.");
+                                DrawEmptyLine();
                             }
                         } while (!insuranceInputCorrect);
 
@@ -304,15 +306,39 @@ internal class Game
         bool running = true;
         while (running)
         {
-            if (_dealer.Hand.CurrentTotal() < 17)
-            {
-                Card card = DrawACard();
-                _dealer.Hand.AddCard(card);
-            }
+            Card card = DrawACard();
+            _dealer.Hand.AddCard(card);
 
             DrawPlayfield(_player, _dealer, _deck);
 
-            if (_dealer.Hand.CurrentTotal() > 16) running = false;
+            if (_dealer.Hand.CurrentTotal() > 16)
+            {
+                if (!_dealer.StandOnSoft17 && _dealer.Hand.CurrentTotal() == 17)
+                {
+                    // Logic for determining Soft 17
+
+                    int cardNo;
+                    for (cardNo = 0; cardNo < _dealer.Hand.Cards.Count; cardNo++)
+                    {
+                        if (_dealer.Hand.Cards[cardNo].Value == 1)
+                        {
+                            Hand testHand = new Hand();
+                            testHand.Cards.AddRange(_dealer.Hand.Cards);
+                            testHand.Cards.Remove(_dealer.Hand.Cards[cardNo]);
+                            if (testHand.CurrentTotal() == 16)
+                            {
+                                running = false;
+                            }
+                            break;
+                        }
+                    }
+                }
+                else
+                {
+                    running = false;
+                }
+            }
+
 
             if (running)
             {
@@ -356,7 +382,6 @@ internal class Game
         }
         if (_player.Surrendered)
         {
-            DrawEmptyLine();
             DrawString("You have surrendered. You get $" + _player.Hands[0].Bet / 2 + " back.");
         }
         else
@@ -458,7 +483,7 @@ internal class Game
     #region UtilityFunctions
     internal void Reshuffle()
     {
-        _deck = new List<Card>(_discardPile);
+        _deck.AddRange(_discardPile);
         _discardPile.Clear();
     }
 
@@ -469,7 +494,10 @@ internal class Game
         Card card = _deck[cardNo];
         _deck.Remove(card);
 
-        if (_deck.Count == 0) Reshuffle();
+        if (_deck.Count <= 52)
+        {
+            Reshuffle();
+        }
 
         return card;
     }
@@ -507,10 +535,15 @@ internal class Game
         }
         else
         {
-            for (int i = 0; i < 52; i++)
-            {
-                _deck.Add(new Card(0, 0, 1));
-            }
+            _deck.Add(new Card(0, 0, 1));
+            _deck.Add(new Card(0, 0, 1));
+            _deck.Add(new Card(0, 0, 1));
+            _deck.Add(new Card(0, 0, 1));
+            _deck.Add(new Card(0, 0, 1));
+            _deck.Add(new Card(0, 0, 1));
+            _deck.Add(new Card(0, 0, 1));
+            _deck.Add(new Card(0, 0, 1));
+            _deck.Add(new Card(0, 0, 1));
         }
     }
     #endregion
