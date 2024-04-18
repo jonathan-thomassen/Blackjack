@@ -350,6 +350,10 @@ internal class Game
                 DrawString("Dealer does not have blackjack. Insurance does not pay.");
             }
         }
+        else
+        {
+            DrawEmptyLine();
+        }
         if (_player.Surrendered)
         {
             DrawEmptyLine();
@@ -364,13 +368,8 @@ internal class Game
                 if (_player.Hands.Count > 1)
                 {
                     DrawEmptyLine();
-                    DrawEmptyLine();
                     DrawString("Result for hand #" + handNo++ + ":");
                     awaitInput = true;
-                }
-                else
-                {
-                    DrawEmptyLine();
                 }
                 if (hand.CurrentTotal() < 22)
                 {
@@ -491,9 +490,9 @@ internal class Game
         hand.Stand = true;
     }
 
-    internal void CreateDeck(bool splitTest = false)
+    internal void CreateDeck(bool stacked = false)
     {
-        if (!splitTest)
+        if (!stacked)
         {
             for (int i = 0; i < _noOfDecks; i++)
             {
