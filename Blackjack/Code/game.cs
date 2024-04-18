@@ -1,5 +1,4 @@
-﻿using System.ComponentModel.Design;
-using static Blackjack.Code.Draw;
+﻿using static Draw;
 
 internal class Game
 {
@@ -331,7 +330,7 @@ internal class Game
                                 running = false;
                             }
                             break;
-                        }                        
+                        }
                     }
                 }
                 else
