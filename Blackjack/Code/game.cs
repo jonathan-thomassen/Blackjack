@@ -1,4 +1,5 @@
-﻿using static Blackjack.Code.Draw;
+﻿using System.ComponentModel.Design;
+using static Blackjack.Code.Draw;
 
 internal class Game
 {
@@ -207,7 +208,7 @@ internal class Game
                                     }
                                     optionString += (", U: Surrender");
                                 }
-                                
+
                                 DrawEmptyLine();
 
                                 if (_player.Hands.Count > 1)
@@ -330,8 +331,7 @@ internal class Game
                                 running = false;
                             }
                             break;
-                        }
-                        running = false;
+                        }                        
                     }
                 }
                 else
