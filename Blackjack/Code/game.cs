@@ -1,12 +1,13 @@
-﻿using static Draw;
+﻿using System.Collections.Generic;
+using static Draw;
 
 internal class Game
 {
-    private int _noOfDecks;
-    private Dealer _dealer;
-    private Player _player;
-    private List<Card> _deck = new List<Card>();
-    private List<Card> _discardPile = new List<Card>();
+    private readonly int _noOfDecks;
+    private readonly Dealer _dealer;
+    private readonly Player _player;
+    private readonly List<Card> _deck = [];
+    private readonly List<Card> _discardPile = [];
 
     internal Game(Player player, int decks, bool standOnSoft17)
     {
@@ -476,7 +477,7 @@ internal class Game
 
     internal Card DrawACard()
     {
-        Random rng = new Random();
+        Random rng = new();
         int cardNo = rng.Next(_deck.Count - 1);
         Card card = _deck[cardNo];
         _deck.Remove(card);

@@ -30,7 +30,7 @@ internal class Player : Actor
 
     internal void AddNewHand(Card card, int bet)
     {
-        Hand hand = new Hand(bet);
+        Hand hand = new(bet);
         hand.AddCard(card);
         Hands.Add(hand);
     }
@@ -97,7 +97,7 @@ internal class Player : Actor
             hand.Wipe(discardPile);
         }
         Hands.Clear();
-        Hand returnHand = new Hand(bet);
+        Hand returnHand = new(bet);
         Hands.Add(returnHand);
         return returnHand;
     }

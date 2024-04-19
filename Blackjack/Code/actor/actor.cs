@@ -1,6 +1,6 @@
 internal abstract class Actor
 {
-    private List<Hand> _hands = new List<Hand>();
+    private List<Hand> _hands = [];
 
     internal List<Hand> Hands { get => _hands; set => _hands = value; }
 

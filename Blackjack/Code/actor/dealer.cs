@@ -25,7 +25,7 @@ internal class Dealer : Actor
             hand.Wipe(discardPile);
         }
         Hands.Clear();
-        Hand returnHand = new Hand();
+        Hand returnHand = new();
         Hands.Add(returnHand);
         return returnHand;
     }

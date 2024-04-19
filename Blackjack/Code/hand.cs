@@ -1,6 +1,6 @@
 internal class Hand
 {
-    private List<Card> _cards = new List<Card>();
+    private readonly List<Card> _cards = [];
     private bool _stand = false;
     private int _bet;
 
