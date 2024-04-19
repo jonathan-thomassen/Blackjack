@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using static Draw;
+﻿using static Draw;
 
 internal class Game
 {
