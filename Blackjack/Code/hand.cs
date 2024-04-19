@@ -29,7 +29,7 @@ internal class Hand
         _cards.Add(card);
     }
 
-    internal virtual void DrawHand()
+    internal void DrawHand()
     {
         foreach (Card card in Cards)
         {
@@ -39,7 +39,7 @@ internal class Hand
         Console.Write("\b");
     }
 
-    internal virtual int CurrentTotal()
+    internal int CurrentTotal()
     {
         int total = 0;
         int noOfAces = 0;
@@ -86,7 +86,26 @@ internal class Hand
         return total;
     }
 
-    internal virtual void Wipe(List<Card> discardPile)
+    internal int LowTotal()
+    {
+        int total = 0;
+
+        foreach (Card card in Cards)
+        {
+            if (card.Value > 9)
+            {
+                total += 10;
+            }
+            else
+            {
+                total += card.Value;
+            }
+        }
+
+        return total;
+    }
+
+    internal void Wipe(List<Card> discardPile)
     {
         discardPile.AddRange(Cards);
         Cards.Clear();

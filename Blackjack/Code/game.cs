@@ -81,7 +81,7 @@ internal class Game
             Hand dealerHand = _dealer.DealNewHand(_discardPile);
             Hand playerHand = _player.DealNewHand(_discardPile, bet);
 
-            dealerHand.AddCard(DrawACard());
+            dealerHand.AddCard(DrawACard());            
             playerHand.AddCard(DrawACard());
             playerHand.AddCard(DrawACard());
 
@@ -306,8 +306,7 @@ internal class Game
         bool running = true;
         while (running)
         {
-            Card card = DrawACard();
-            _dealer.Hand.AddCard(card);
+            _dealer.Hand.AddCard(DrawACard());            
 
             DrawPlayfield(_player, _dealer, _deck);
 
@@ -315,32 +314,9 @@ internal class Game
             {
                 if (!_dealer.StandOnSoft17 && _dealer.Hand.CurrentTotal() == 17)
                 {
-                    // Logic for determining Soft 17
+                    // Check for Soft 17
 
-                    int? ace = null;
-                    int n = 0;
-
-                    foreach (Card c in _dealer.Hand.Cards)
-                    {
-                        if (c.Value == 1)
-                        {
-                            ace = n;
-                            break;
-                        }
-                        n++;
-                    }
-
-                    if (ace != null)
-                    {
-                        Hand testHand = new Hand();
-                        testHand.Cards.AddRange(_dealer.Hand.Cards);
-                        testHand.Cards.Remove(_dealer.Hand.Cards[(int)ace]);
-                        if (testHand.CurrentTotal() == 16)
-                        {
-                            running = false;
-                        }
-                    }
-                    else
+                    if (_dealer.Hand.LowTotal() == 17)
                     {
                         running = false;
                     }
@@ -549,12 +525,7 @@ internal class Game
             _deck.Add(new Card(0, 0, 1));
             _deck.Add(new Card(0, 0, 1));
             _deck.Add(new Card(0, 0, 1));
-            _deck.Add(new Card(0, 0, 1));
-            _deck.Add(new Card(0, 0, 1));
-            _deck.Add(new Card(0, 0, 1));
-            _deck.Add(new Card(0, 0, 1));
-            _deck.Add(new Card(0, 0, 1));
-            _deck.Add(new Card(0, 0, 1));
+            _deck.Add(new Card(0, 0, 6));
         }
     }
     #endregion
